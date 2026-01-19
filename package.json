@@ -1,0 +1,41 @@
+{
+  "name": "tpl-ts-sdk",
+  "version": "0.0.0",
+  "description": "",
+  "type": "module",
+  "engines": {
+    "node": ">= 18"
+  },
+  "license": "MIT",
+  "author": "0x-jerry <x.jerry.wang@gmail.com>",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "test": "vitest",
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "prepublishOnly": "npm run build",
+    "release": "x-release",
+    "ci:test": "vitest run"
+  },
+  "devDependencies": {
+    "@0x-jerry/x-release": "^2.4.0",
+    "@biomejs/biome": "^2.3.6",
+    "@types/node": "^24.10.1",
+    "@vitest/coverage-v8": "^4.0.10",
+    "tsup": "^8.5.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.10"
+  },
+  "dependencies": {
+    "@0x-jerry/utils": "^5.0.0"
+  }
+}
