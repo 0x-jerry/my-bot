@@ -23,8 +23,9 @@ model ChatMessage {
 
   sessionId Int
 
-  role      String
-  content   String?
+  role       String
+  rawContent String
+  content    String?
 }
 
 model ChatMemory {
