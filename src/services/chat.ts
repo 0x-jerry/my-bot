@@ -35,10 +35,7 @@ export async function* chat(opt: ChatOptions): ChatResponse {
 
   const chatStreamResp = await client.chat.completions.create({
     model: '',
-    messages: messages.map((msg) => ({
-      role: msg.role as any,
-      content: msg.content,
-    })),
+    messages: messages.map((msg) => JSON.parse(msg.rawContent)),
     tools: opt.tools?.map((t) => ({
       type: 'function',
       function: {

@@ -10,10 +10,69 @@ datasource db {
   provider = "sqlite"
 }
 
+model ProviderConfig {
+  id    Int     @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+  url String
+  model String
+  apiKey String
+
+  agentConfigs AgentConfig[]
+}
+
+
+model McpConfig {
+  id    Int     @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+  url String
+
+  agentConfigs AgentConfig[]
+}
+
+model PromptConfig {
+  id    Int     @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+  prompt String
+
+  agentConfigs AgentConfig[]
+}
+
+model AgentConfig {
+  id    Int     @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  systemPromptId Int?
+  systemPrompt PromptConfig? @relation(fields: [systemPromptId], references: [id])
+
+  providerConfigId Int?
+  provider ProviderConfig? @relation(fields: [providerConfigId], references: [id])
+
+  mcps McpConfig[]
+
+  chatSessions ChatSession[]
+}
+
 model ChatSession {
   id    Int     @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  name String
+
+  agentConfigId Int?
+  agentConfig AgentConfig? @relation(fields: [agentConfigId], references: [id])
 }
 
 model ChatMessage {
@@ -25,7 +84,7 @@ model ChatMessage {
 
   role       String
   rawContent String
-  content    String?
+  message    String
 }
 
 model ChatMemory {
@@ -34,4 +93,5 @@ model ChatMemory {
   updatedAt DateTime @updatedAt
 
   sessionId Int
+  content String
 }

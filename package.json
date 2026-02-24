@@ -22,7 +22,7 @@
     "test": "vitest",
     "build": "tsup src/index.ts --format esm --dts --clean",
     "prepublishOnly": "npm run build",
-    "db:sync": "prisma db push",
+    "db:sync": "prisma db push && prisma generate",
     "db:gen": "prisma generate",
     "release": "x-release",
     "ci:test": "vitest run"
