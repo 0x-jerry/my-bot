@@ -43,7 +43,7 @@
     "@hono/node-server": "^1.19.9",
     "@prisma/adapter-better-sqlite3": "^7.2.0",
     "@prisma/client": "^7.2.0",
-    "hono": "^4.11.4",
+    "hono": "^4.11.10",
     "openai": "^6.16.0",
     "zod": "^4.3.5"
   }
