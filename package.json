@@ -22,20 +22,29 @@
     "test": "vitest",
     "build": "tsup src/index.ts --format esm --dts --clean",
     "prepublishOnly": "npm run build",
+    "db:sync": "prisma db push",
     "release": "x-release",
     "ci:test": "vitest run"
   },
   "devDependencies": {
-    "@0x-jerry/x-release": "^2.4.0",
-    "@biomejs/biome": "^2.3.6",
-    "@types/node": "^24.10.1",
-    "@vitest/coverage-v8": "^4.0.10",
+    "@0x-jerry/x-release": "^2.4.1",
+    "@biomejs/biome": "^2.3.11",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^25.0.9",
+    "@vitest/coverage-v8": "^4.0.17",
+    "prisma": "^7.2.0",
     "tsup": "^8.5.1",
-    "tsx": "^4.20.6",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.10"
+    "vitest": "^4.0.17"
   },
   "dependencies": {
-    "@0x-jerry/utils": "^5.0.0"
+    "@0x-jerry/utils": "^6.0.0",
+    "@hono/node-server": "^1.19.9",
+    "@prisma/adapter-better-sqlite3": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "hono": "^4.11.4",
+    "openai": "^6.16.0",
+    "zod": "^4.3.5"
   }
 }
