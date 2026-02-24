@@ -4,9 +4,7 @@ import type {
 } from '../../generated/prisma/models'
 import { db } from '../database'
 
-export async function searchMemory(
-  keywords: string[],
-): Promise<ChatMemoryModel[]> {
+export async function search(keywords: string[]): Promise<ChatMemoryModel[]> {
   const keywordsConditions: ChatMemoryWhereInput[] = []
 
   for (const keyword of keywords) {
@@ -20,6 +18,20 @@ export async function searchMemory(
   const result = await db.chatMemory.findMany({
     where: {
       OR: keywordsConditions,
+    },
+  })
+
+  return result
+}
+
+export async function create(
+  sessionId: number,
+  content: string,
+): Promise<ChatMemoryModel> {
+  const result = await db.chatMemory.create({
+    data: {
+      sessionId,
+      content,
     },
   })
 

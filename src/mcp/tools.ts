@@ -1,5 +1,9 @@
-import type { ToolDefinition } from "./types";
+import { createMemoryTools } from './memory'
+import type { ToolDefinition } from './types'
 
-export function getAllTools(): ToolDefinition[] {
-  return []
+export function createSessionTools(sessionId: number): ToolDefinition[] {
+  return [
+    //
+    ...createMemoryTools(sessionId),
+  ]
 }

@@ -1,7 +1,9 @@
+import type { Awaitable } from '@0x-jerry/utils'
+
 export interface ToolDefinition<T extends Record<string, unknown> = any> {
   name: string
   description?: string
   parameters?: Record<string, unknown>
   strict?: boolean | null
-  call: (args: T) => void
+  call: (args: T) => Awaitable<string | void>
 }
