@@ -1,11 +1,13 @@
+import path from 'node:path'
 import OpenAI from 'openai'
 import type {
   ChatMessageModel,
   ChatSessionModel,
 } from '../../generated/prisma/models'
+import { appGlobalConfig } from '../configs/global'
 import { ChatRole } from '../constants/chat'
 import { db } from '../database'
-import type { ToolDefinition } from '../mcp/types'
+import type { ToolDefinition } from '../tools/types'
 
 interface ChatMessageTextChunk {
   type: 'text'
@@ -241,4 +243,8 @@ async function callTool(
   } catch (error) {
     return String(error)
   }
+}
+
+export function getWorksapceRoot(sessionId: number): string {
+  return path.join(appGlobalConfig.session.workspaceRoot, `${sessionId}`)
 }
