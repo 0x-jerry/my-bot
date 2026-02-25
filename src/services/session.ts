@@ -1,8 +1,10 @@
 import OpenAI from 'openai'
-import type { ChatSessionModel } from '../../generated/prisma/models'
+import type {
+  ChatMessageModel,
+  ChatSessionModel,
+} from '../../generated/prisma/models'
 import { ChatRole } from '../constants/chat'
 import { db } from '../database'
-import { createSessionTools } from '../mcp/tools'
 import type { ToolDefinition } from '../mcp/types'
 
 interface ChatMessageTextChunk {
@@ -13,6 +15,7 @@ interface ChatMessageTextChunk {
 interface ChatMessageToolCallChunk {
   type: 'tool_call'
   name: string
+  arguments: string
 }
 
 interface ChatMessageToolCallResultChunk {
@@ -20,13 +23,14 @@ interface ChatMessageToolCallResultChunk {
   result: string
 }
 
-type ChatMessageChunk =
+export type ChatMessageChunk =
   | ChatMessageTextChunk
   | ChatMessageToolCallChunk
   | ChatMessageToolCallResultChunk
 
 export interface ChatOptions {
   sessionId: number
+  tools?: ToolDefinition[]
   cancellnationToken?: AbortSignal
 }
 
@@ -41,18 +45,9 @@ export async function chatWith(
   message?: string,
 ): Promise<ChatResponse> {
   if (message) {
-    const msg: OpenAI.Chat.Completions.ChatCompletionUserMessageParam = {
+    await createChatMessage(opt.sessionId, {
       role: ChatRole.User,
       content: message,
-    }
-
-    await db.chatMessage.create({
-      data: {
-        role: ChatRole.User,
-        sessionId: opt.sessionId,
-        message: message,
-        rawContent: JSON.stringify(msg),
-      },
     })
   }
 
@@ -89,22 +84,24 @@ async function* continueChat(opt: ChatOptions): ChatResponse {
     },
   })
 
-  const tools = createSessionTools(session.id)
+  const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = (
+    opt.tools || []
+  ).map((tool) => {
+    return {
+      type: 'function',
+      function: {
+        name: tool.name,
+        description: tool.description,
+        strict: tool.strict,
+        parameters: tool.parameters,
+      },
+    }
+  })
 
   const chatStreamResp = await client.chat.completions.create({
     model: session.agentConfig.provider.model,
     messages: messages.map((msg) => JSON.parse(msg.rawContent)),
-    tools: tools.map((tool) => {
-      return {
-        type: 'function',
-        function: {
-          name: tool.name,
-          description: tool.description,
-          strict: tool.strict,
-          parameters: tool.parameters,
-        },
-      }
-    }),
+    tools: tools,
     stream: true,
   })
 
@@ -115,6 +112,8 @@ async function* continueChat(opt: ChatOptions): ChatResponse {
   if (opt.cancellnationToken?.aborted) {
     chatStreamResp.controller.abort(opt.cancellnationToken.reason)
   }
+
+  let currentChatMessage: ChatMessageModel | undefined
 
   for await (const chunk of chatStreamResp) {
     const choice = chunk.choices.at(0)
@@ -130,42 +129,25 @@ async function* continueChat(opt: ChatOptions): ChatResponse {
         return
       }
 
-      const msg: OpenAI.Chat.Completions.ChatCompletionAssistantMessageParam = {
+      await createChatMessage(opt.sessionId, {
         role: ChatRole.Assistant,
         tool_calls:
           toolCalls as OpenAI.Chat.Completions.ChatCompletionMessageToolCall[],
-      }
-
-      await db.chatMessage.create({
-        data: {
-          sessionId: session.id,
-          role: ChatRole.Assistant,
-          rawContent: JSON.stringify(msg),
-          message: '',
-        },
       })
 
       for (const tool of toolCalls) {
         yield {
           type: 'tool_call',
           name: tool.function!.name!,
+          arguments: tool.function!.arguments!,
         }
 
-        const result = await callTool(tool, tools)
+        const result = await callTool(tool, opt.tools || [])
 
-        const msg: OpenAI.Chat.Completions.ChatCompletionToolMessageParam = {
+        await createChatMessage(opt.sessionId, {
           role: ChatRole.Tool,
           tool_call_id: chunk.id,
           content: result,
-        }
-
-        await db.chatMessage.create({
-          data: {
-            sessionId: session.id,
-            role: ChatRole.Tool,
-            message: result,
-            rawContent: JSON.stringify(msg),
-          },
         })
 
         yield {
@@ -177,11 +159,62 @@ async function* continueChat(opt: ChatOptions): ChatResponse {
       return continueChat(opt)
     }
 
+    if (!currentChatMessage) {
+      currentChatMessage = await createChatMessage(opt.sessionId, {
+        role: ChatRole.Assistant,
+        content: choice.delta.content,
+      })
+    } else {
+      const newMessage =
+        currentChatMessage.message + (choice.delta.content || '')
+
+      currentChatMessage = await db.chatMessage.update({
+        where: {
+          id: currentChatMessage.id,
+        },
+        data: {
+          message: newMessage,
+          rawContent: JSON.stringify({
+            role: ChatRole.Assistant,
+            content: newMessage,
+          }),
+        },
+      })
+    }
+
     yield {
       type: 'text',
       content: choice.delta.content!,
     }
   }
+}
+
+async function createChatMessage(
+  sessionId: number,
+  msg: OpenAI.Chat.Completions.ChatCompletionMessageParam,
+) {
+  let message = ''
+
+  if (msg.content) {
+    if (Array.isArray(msg.content)) {
+      for (const c of msg.content) {
+        if (c.type === 'text') {
+          message += c.text
+        }
+      }
+    } else {
+      message = msg.content
+    }
+  }
+
+  return await db.chatMessage.create({
+    data: {
+      role: ChatRole.User,
+      sessionId,
+      message,
+      rawContent: JSON.stringify(msg),
+    },
+  })
 }
 
 export async function create(agentConfigId: number): Promise<ChatSessionModel> {
