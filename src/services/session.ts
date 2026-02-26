@@ -8,6 +8,7 @@ import { appGlobalConfig } from '../configs/global'
 import { ChatRole } from '../constants/chat'
 import { db } from '../database'
 import type { ToolDefinition } from '../tools/types'
+import { exec } from '@0x-jerry/utils/node'
 
 interface ChatMessageTextChunk {
   type: 'text'
@@ -227,6 +228,17 @@ export async function create(agentConfigId: number): Promise<ChatSessionModel> {
     },
   })
 
+  const pwd = process.cwd()
+  const root = getWorkspaceRoot(result.id)
+  process.chdir(root)
+
+  // Install find-skills skill in workspace
+  // https://skills.sh/vercel-labs/skills/find-skills
+  const r = exec('npx skills add https://github.com/vercel-labs/skills --skill find-skills', { collectOutput: true })
+
+  process.chdir(pwd)
+  await r
+
   return result
 }
 
@@ -245,6 +257,6 @@ async function callTool(
   }
 }
 
-export function getWorksapceRoot(sessionId: number): string {
+export function getWorkspaceRoot(sessionId: number): string {
   return path.join(appGlobalConfig.session.workspaceRoot, `${sessionId}`)
 }

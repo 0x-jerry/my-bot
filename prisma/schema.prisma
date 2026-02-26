@@ -46,6 +46,17 @@ model PromptConfig {
   agentConfigs AgentConfig[]
 }
 
+model AgentSkill {
+  id    Int     @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+  githubUrl String
+
+  agentConfigs AgentConfig[]
+}
+
 model AgentConfig {
   id    Int     @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -60,6 +71,8 @@ model AgentConfig {
   provider ProviderConfig? @relation(fields: [providerConfigId], references: [id])
 
   mcps McpConfig[]
+
+  skills AgentSkill[]
 
   chatSessions ChatSession[]
 }

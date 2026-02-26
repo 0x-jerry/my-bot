@@ -10,7 +10,7 @@ export enum FileToolPermission {
 }
 
 export function createFileTools(sessionId: number): ToolDefinition[] {
-  const workspaceRoot = sessionService.getWorksapceRoot(sessionId)
+  const workspaceRoot = sessionService.getWorkspaceRoot(sessionId)
 
   return [
     defineTool({
