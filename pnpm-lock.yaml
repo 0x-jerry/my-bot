@@ -32,6 +32,12 @@ importers:
       '@hono/node-server':
         specifier: ^1.19.9
         version: 1.19.9(hono@4.12.2)
+      '@my-bot/protocol':
+        specifier: workspace:*
+        version: link:../protocol
+      '@my-bot/telegram':
+        specifier: workspace:*
+        version: link:../telegram
       '@prisma/adapter-better-sqlite3':
         specifier: ^7.4.1
         version: 7.4.1

@@ -40,6 +40,8 @@
     "vitest": "^4.0.18"
   },
   "dependencies": {
+    "@my-bot/telegram": "workspace:*",
+    "@my-bot/protocol": "workspace:*",
     "@0x-jerry/utils": "^6.2.0",
     "@hono/node-server": "^1.19.9",
     "@prisma/adapter-better-sqlite3": "^7.4.1",
