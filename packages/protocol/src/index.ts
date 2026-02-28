@@ -18,6 +18,13 @@ export namespace Agent {
     stop(): Promise<void>;
 
     /**
+     * List all agents.
+     */
+    agents(): Promise<AgentInfo[]>;
+
+    useAgent(sessionId: string, agentId: string): Promise<void>;
+
+    /**
      * Sessions Adapter
      */
     sessions: SessionsAdapter;
@@ -25,7 +32,13 @@ export namespace Agent {
     /**
      * Messages Adapter
      */
-    messages: MessageAdapter;
+    messages: MessagesAdapter;
+  }
+
+  export interface AgentInfo {
+    id: string
+    name: string
+    description: string
   }
 
   export interface SessionsAdapter {
@@ -56,7 +69,7 @@ export namespace Agent {
     resume(sessionId: string): Promise<void>;
   }
 
-  interface MessageAdapter {
+  export interface MessagesAdapter {
     /**
      * Send messages to the agent in a session and get a stream of events.
      */
