@@ -94,6 +94,9 @@ importers:
         specifier: ^7.22.0
         version: 7.22.0
     devDependencies:
+      '@types/global-agent':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@types/node':
         specifier: ^25.3.0
         version: 25.3.0
@@ -650,6 +653,9 @@ packages:
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
+
+  '@types/global-agent@3.0.0':
+    resolution: {integrity: sha512-OmvaPJtTaY/wd1hxelLJmf8oKQpmKZdrlfQ+MWL59eKSEHJDDEifIo69248bdJ0yLIN+iMNQ6sKMtnwU6AxajA==}
 
   '@types/node@25.3.0':
     resolution: {integrity: sha512-4K3bqJpXpqfg2XKGK9bpDTc6xO/xoUP/RBWS7AtRMug6zZFaRekiLzjVtAoZMquxoAbzBvy5nxQ7veS5eYzf8A==}
@@ -1997,6 +2003,8 @@ snapshots:
   '@types/deep-eql@4.0.2': {}
 
   '@types/estree@1.0.8': {}
+
+  '@types/global-agent@3.0.0': {}
 
   '@types/node@25.3.0':
     dependencies:
