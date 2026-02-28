@@ -9,6 +9,15 @@ export namespace Agent {
     description: string;
 
     /**
+     * Start the agent.
+     */
+    start(): Promise<void>;
+    /**
+     * Stop the agent.
+     */
+    stop(): Promise<void>;
+
+    /**
      * Sessions Adapter
      */
     sessions: SessionsAdapter;
