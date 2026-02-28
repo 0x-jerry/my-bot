@@ -122,6 +122,16 @@ export namespace IM {
     name: string;
 
     /**
+     * Start the bot.
+     */
+    start(): Promise<void>;
+
+    /**
+     * Stop the bot.
+     */
+    stop(): Promise<void>;
+
+    /**
      * Send a message to a chat.
      */
     send(chatId: string, text: string): Promise<void>;
@@ -156,6 +166,6 @@ export namespace IM {
     messageId: string;
     userId: string;
     command: string;
-    content?: string
+    args?: string | null
   }
 }
