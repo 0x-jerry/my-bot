@@ -18,11 +18,16 @@ const COMMANDS: Common.Command[] = [
     command: "new",
     description: "Create a new conversation session.",
   },
-]
+  {
+    command: "change-agent",
+    description:
+      "Select an agent to use for the current conversation session. Usage: /change-agent <agent_id>",
+  },
+];
 
 export class BotBridge {
-  im: IM.Adapter;
-  agent: Agent.Adapter;
+  readonly im: IM.Adapter;
+  readonly agent: Agent.Adapter;
   _chatSessionMap: Map<string, string> = new Map();
 
   constructor(options: BridgeOptions) {
@@ -60,10 +65,23 @@ export class BotBridge {
         this._chatSessionMap.set(event.chatId, sessionId);
 
         // Auto-select the first available agent for a new session
-        const agents = await this.agent.agents();
-        if (agents.length > 0) {
-          await this.agent.useAgent(sessionId, agents[0].id);
+        const agent = (await this.agent.agents()).at(0);
+        if (!agent) {
+          await this.im.reply(
+            event.chatId,
+            event.messageId,
+            "No available agent found. Please contact the administrator."
+          );
+          return;
         }
+
+        await this.agent.useAgent(sessionId, agent.id);
+
+        await this.im.reply(
+          event.chatId,
+          event.messageId,
+          `Session ${sessionId} created. Auto-selected agent ${agent.name}`
+        );
       }
 
       if (!sessionId) {
@@ -147,5 +165,41 @@ export class BotBridge {
       return;
     }
 
+    if (event.command === "change-agent") {
+      const agentId = event.args;
+      if (!agentId) {
+        await this.im.reply(
+          event.chatId,
+          event.messageId,
+          "Please specify an agent ID. Usage: /change-agent <agent_id>"
+        );
+        return;
+      }
+
+      try {
+        const sessionId = this._chatSessionMap.get(event.chatId);
+        if (!sessionId) {
+          await this.im.reply(
+            event.chatId,
+            event.messageId,
+            "No active session found. Please start a new session first."
+          );
+          return;
+        }
+
+        await this.agent.useAgent(sessionId, agentId);
+        await this.im.reply(
+          event.chatId,
+          event.messageId,
+          `Agent ${agentId} selected for current session ${sessionId}`
+        );
+      } catch (error) {
+        await this.im.reply(
+          event.chatId,
+          event.messageId,
+          `Failed to select agent ${agentId}: ${error}`
+        );
+      }
+    }
   }
 }
