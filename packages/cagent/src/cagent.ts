@@ -104,26 +104,14 @@ class CagentMessageAdapter implements Agent.MessagesAdapter {
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
-    let buffer = "";
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
-      buffer += decoder.decode(value, { stream: true });
+      const line = decoder.decode(value, { stream: true });
 
-      const lines = buffer.split("\n");
-      buffer = lines.pop() || ""; // Keep the last incomplete line in the buffer
-
-      for (const line of lines) {
-        if (line.startsWith("data: ")) {
-          try {
-            const eventData = JSON.parse(line.substring(6));
-            yield eventData as Agent.StreamEvent;
-          } catch (error) {
-            console.error("Error parsing SSE event:", error);
-          }
-        }
-      }
+      const eventData = JSON.parse(line);
+      yield eventData as Agent.StreamEvent;
     }
   }
 
