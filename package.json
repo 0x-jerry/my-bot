@@ -1,5 +1,5 @@
 {
-  "name": "tpl-ts-sdk",
+  "name": "my-bot",
   "version": "0.0.0",
   "description": "",
   "type": "module",
@@ -8,44 +8,14 @@
   },
   "license": "MIT",
   "author": "0x-jerry <x.jerry.wang@gmail.com>",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
-  },
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "dev": "tsx src/index.ts",
-    "test": "vitest",
-    "build": "tsup src/index.ts --format esm --dts --clean",
-    "prepublishOnly": "npm run build",
-    "db:sync": "prisma db push && prisma generate",
-    "db:gen": "prisma generate",
-    "release": "x-release",
-    "ci:test": "vitest run"
+    "setup": ""
   },
   "devDependencies": {
     "@0x-jerry/x-release": "^2.4.1",
-    "@biomejs/biome": "^2.4.4",
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/node": "^25.3.0",
-    "@vitest/coverage-v8": "^4.0.18",
-    "prisma": "^7.4.1",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
-  },
-  "dependencies": {
-    "@0x-jerry/utils": "^6.2.0",
-    "@hono/node-server": "^1.19.9",
-    "@prisma/adapter-better-sqlite3": "^7.4.1",
-    "@prisma/client": "^7.4.1",
-    "hono": "^4.12.2",
-    "openai": "^6.24.0",
-    "zod": "^4.3.6"
   }
 }
