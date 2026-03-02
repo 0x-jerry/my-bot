@@ -1,4 +1,4 @@
-import type { Agent, Common, IM } from "@my-bot/protocol";
+import type { Agent, Common, IM } from "@my-bot/spec";
 
 export interface BridgeOptions {
   im: IM.Adapter;

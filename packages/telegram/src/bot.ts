@@ -1,4 +1,4 @@
-import type { Common, IM } from "@my-bot/protocol";
+import type { Common, IM } from "@my-bot/spec";
 import { Bot } from "gramio";
 
 export class TelegramAdapter implements IM.Adapter {

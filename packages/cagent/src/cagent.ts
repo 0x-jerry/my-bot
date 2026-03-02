@@ -1,4 +1,4 @@
-import { Agent } from "@my-bot/protocol";
+import { Agent } from "@my-bot/spec";
 import got from "got";
 
 export interface CagentAdapterOptions {
