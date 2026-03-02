@@ -23,11 +23,23 @@ const COMMANDS: Common.Command[] = [
     description:
       "Select an agent to use for the current conversation session. Usage: /change-agent <agent_id>",
   },
+  {
+    command: "sessions",
+    description: "List all sessions",
+  },
+  {
+    command: "resume",
+    description: "Resume a session by session id, Usage: /resume <session-id>",
+  },
 ];
 
 export class BotBridge {
   readonly im: IM.Adapter;
   readonly agent: Agent.Adapter;
+
+  /**
+   * ChatId => sessionId
+   */
   _chatSessionMap: Map<string, string> = new Map();
 
   constructor(options: BridgeOptions) {
@@ -41,11 +53,12 @@ export class BotBridge {
     await Promise.all([this.im.start(), this.agent.start()]);
 
     this.im.on("message", (event: IM.MessageEvent) =>
-      this._handleMessage(event)
+      this._handleMessage(event),
     );
-    this.im.on("command", (event: IM.CommandEvent) =>
-      this._handleCommand(event)
-    );
+
+    const commandHandler = this._createCommandHandler();
+
+    this.im.on("command", commandHandler);
 
     console.log("Bridge started");
   }
@@ -70,7 +83,7 @@ export class BotBridge {
           await this.im.reply(
             event.chatId,
             event.messageId,
-            "No available agent found. Please contact the administrator."
+            "No available agent found. Please contact the administrator.",
           );
           return;
         }
@@ -80,7 +93,7 @@ export class BotBridge {
         await this.im.reply(
           event.chatId,
           event.messageId,
-          `Session ${sessionId} created. Auto-selected agent ${agent.name}`
+          `Session ${sessionId} created. Auto-selected agent ${agent.name}`,
         );
       }
 
@@ -101,7 +114,7 @@ export class BotBridge {
             // But for now, let's just send the whole thing at the end for simplicity
             await this.im.send(
               event.chatId,
-              responseText || "No response received."
+              responseText || "No response received.",
             );
             break;
           case "agent_choice":
@@ -113,7 +126,7 @@ export class BotBridge {
             // Handle tool calls if needed
             await this.im.send(
               event.chatId,
-              `Tool call requested: ${streamEvent.tool_call?.name}`
+              `Tool call requested: ${streamEvent.tool_call?.name}`,
             );
             break;
           case "error":
@@ -126,80 +139,129 @@ export class BotBridge {
     } catch (error) {
       await this.im.send(
         event.chatId,
-        `Sorry, I encountered an error processing your message: ${error}`
+        `Sorry, I encountered an error processing your message: ${error}`,
       );
     }
   }
 
-  async _handleCommand(event: IM.CommandEvent): Promise<void> {
-    if (event.command === "start") {
-      await this.im.reply(
-        event.chatId,
-        event.messageId,
-        "Welcome! I am your AI assistant. How can I help you today?"
-      );
-      return;
+  _createCommandHandler() {
+    const bridge = this;
+    const { im, agent } = bridge;
+
+    interface CommandHandleMap {
+      [command: string]: (evt: IM.CommandEvent) => Promise<void>;
     }
 
-    if (event.command === "agents") {
-      const agents = await this.agent.agents();
-      const agentList = agents
-        .map((a: Agent.AgentInfo) => `- ${a.name} (${a.id}): ${a.description}`)
-        .join("\n");
-      await this.im.reply(
-        event.chatId,
-        event.messageId,
-        `Available agents:\n${agentList}`
-      );
-      return;
-    }
-
-    if (event.command === "new") {
-      const session = await this.agent.sessions.create();
-      this._chatSessionMap.set(event.chatId, session.id);
-      await this.im.reply(
-        event.chatId,
-        event.messageId,
-        `New session created with ID: ${session.id}`
-      );
-      return;
-    }
-
-    if (event.command === "change-agent") {
-      const agentId = event.args;
-      if (!agentId) {
-        await this.im.reply(
-          event.chatId,
-          event.messageId,
-          "Please specify an agent ID. Usage: /change-agent <agent_id>"
+    const commandsHandle: CommandHandleMap = {
+      async start(evt) {
+        await im.reply(
+          evt.chatId,
+          evt.messageId,
+          "Welcome! I am your AI assistant. How can I help you today?",
         );
-        return;
-      }
-
-      try {
-        const sessionId = this._chatSessionMap.get(event.chatId);
-        if (!sessionId) {
-          await this.im.reply(
-            event.chatId,
-            event.messageId,
-            "No active session found. Please start a new session first."
+      },
+      async agents(evt) {
+        const agents = await agent.agents();
+        const agentList = agents
+          .map(
+            (a: Agent.AgentInfo) => `- ${a.name} (${a.id}): ${a.description}`,
+          )
+          .join("\n");
+        await im.reply(
+          evt.chatId,
+          evt.messageId,
+          `Available agents:\n${agentList}`,
+        );
+      },
+      async new(evt) {
+        const session = await agent.sessions.create();
+        bridge._chatSessionMap.set(evt.chatId, session.id);
+        await im.reply(
+          evt.chatId,
+          evt.messageId,
+          `New session created with ID: ${session.id}`,
+        );
+      },
+      async "change-agent"(evt) {
+        const agentId = evt.args;
+        if (!agentId) {
+          await im.reply(
+            evt.chatId,
+            evt.messageId,
+            "Please specify an agent ID. Usage: /change-agent <agent_id>",
           );
           return;
         }
 
-        await this.agent.useAgent(sessionId, agentId);
-        await this.im.reply(
-          event.chatId,
-          event.messageId,
-          `Agent ${agentId} selected for current session ${sessionId}`
-        );
-      } catch (error) {
-        await this.im.reply(
-          event.chatId,
-          event.messageId,
-          `Failed to select agent ${agentId}: ${error}`
+        try {
+          const sessionId = bridge._chatSessionMap.get(evt.chatId);
+          if (!sessionId) {
+            await im.reply(
+              evt.chatId,
+              evt.messageId,
+              "No active session found. Please start a new session first.",
+            );
+            return;
+          }
+
+          await agent.useAgent(sessionId, agentId);
+          await im.reply(
+            evt.chatId,
+            evt.messageId,
+            `Agent ${agentId} selected for current session ${sessionId}`,
+          );
+        } catch (error) {
+          await im.reply(
+            evt.chatId,
+            evt.messageId,
+            `Failed to select agent ${agentId}: ${error}`,
+          );
+        }
+      },
+      async sessions(evt) {
+        const sessions = await agent.sessions.list();
+
+        const msg = sessions.map((n) => `${n.title} (${n.id})`).join("\n");
+
+        await im.reply(evt.chatId, evt.messageId, msg);
+      },
+      async resume(evt) {
+        const sessionId = evt.args!;
+
+        if (!sessionId) {
+          throw new Error(`Miss sessionId!`);
+        }
+
+        const session = await agent.sessions.get(sessionId);
+
+        if (!session) {
+          throw new Error(`Session ${sessionId} not found!`);
+        }
+
+        bridge._chatSessionMap.set(evt.chatId, sessionId);
+      },
+    };
+
+    return async (evt: IM.CommandEvent) => {
+      const fn = commandsHandle[evt.command];
+
+      if (fn) {
+        try {
+          await fn(evt);
+        } catch (error) {
+          await im.reply(
+            evt.chatId,
+            evt.messageId,
+            `Command execute failed! Error: ${String(error)}`,
+          );
+        }
+      } else {
+        await im.reply(
+          evt.chatId,
+          evt.messageId,
+          `Command ${evt.command} not found!`,
         );
       }
-    }
+    };
   }
 }
