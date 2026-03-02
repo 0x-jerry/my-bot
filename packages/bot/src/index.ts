@@ -22,7 +22,10 @@ const config = {
   },
 };
 
-const im = new TelegramAdapter(config.im.telegram.token!);
+const im = new TelegramAdapter({
+  token: config.im.telegram.token!,
+  debug: true,
+});
 const agent = new CagentAdapter({
   baseUrl: config.agent.cagent.url!,
 });
@@ -30,6 +33,7 @@ const agent = new CagentAdapter({
 const bridge = new BotBridge({
   im,
   agent,
+  debug: true,
 });
 
 await loadData();
@@ -49,9 +53,14 @@ process.on("SIGTERM", async () => {
 });
 
 async function loadData() {
-  const content = await readFile(config.persistFile, "utf8");
-  const data = JSON.parse(content);
-  bridge.restoreFromData(data);
+  try {
+    const content = await readFile(config.persistFile, "utf8");
+    const data = JSON.parse(content);
+    bridge.restoreFromData(data);
+  } catch (error) {
+    console.warn("Failed to load data:", error);
+    // ignore
+  }
 }
 
 async function saveData() {

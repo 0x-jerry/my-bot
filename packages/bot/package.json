@@ -11,6 +11,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.23.0",
   "dependencies": {
+    "@0x-jerry/utils": "^6.2.0",
     "@my-bot/bridge": "workspace:*",
     "@my-bot/cagent": "workspace:*",
     "@my-bot/spec": "workspace:*",

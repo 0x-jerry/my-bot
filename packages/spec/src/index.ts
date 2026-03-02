@@ -134,6 +134,9 @@ export namespace Agent {
 
 export namespace Common {
   export interface Command {
+    /**
+     * Can contain only lowercase English letters, digits and underscores.
+     */
     command: string;
     description: string;
   }
@@ -171,12 +174,12 @@ export namespace IM {
      */
     setCommands(commands: Common.Command[]): Promise<void>;
 
-    /**
-     * Register a callback to handle incoming messages.
-     */
-    on(event: "message", callback: (event: MessageEvent) => void): void;
+    on<T extends keyof AdapterEvents>(event: T, callback: (...args: AdapterEvents[T]) =>void): void;
+  }
 
-    on(event: "command", callback: (event: CommandEvent) => void): void;
+  export interface AdapterEvents {
+    command: [event: CommandEvent]
+    message: [event: MessageEvent]
   }
 
   export interface EventBase {

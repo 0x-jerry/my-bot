@@ -1,15 +1,71 @@
+import { createLogger, EventEmitter, type Logger } from "@0x-jerry/utils";
 import type { Common, IM } from "@my-bot/spec";
+import { name as pkgName } from "../package.json";
 import { Bot } from "gramio";
+
+export interface TelegramAdapterOptions {
+  token: string;
+  debug?: boolean;
+}
 
 export class TelegramAdapter implements IM.Adapter {
   name = "Telegram";
+
+  _events = new EventEmitter<IM.AdapterEvents>();
 
   _bot: Bot;
 
   _forwardCommands: Common.Command[] = [];
 
-  constructor(token: string) {
-    this._bot = new Bot(token);
+  readonly log?: Logger;
+
+  constructor(options: TelegramAdapterOptions) {
+    if (options.debug) {
+      this.log = createLogger(pkgName);
+    }
+
+    this._bot = new Bot(options.token);
+    this._bot.on("message", (ctx) => {
+      const content = ctx.text || "";
+      const parsedCommand = parseCommand(content);
+      if (parsedCommand) {
+        const evt: IM.CommandEvent = {
+          chatId: ctx.chat.id.toString(),
+          messageId: ctx.id.toString(),
+          userId: ctx.from?.id.toString() || "",
+          command: parsedCommand.command,
+          args: parsedCommand.args,
+          send: async (content) => {
+            return this.send(ctx.chatId.toString(), content);
+          },
+          reply: async (content) => {
+            return this.reply(
+              ctx.chatId.toString(),
+              ctx.id.toString(),
+              content
+            );
+          },
+        };
+
+        this._events.emit("command", evt);
+        return;
+      }
+
+      const msg: IM.MessageEvent = {
+        chatId: ctx.chat.id.toString(),
+        messageId: ctx.id.toString(),
+        userId: ctx.from?.id.toString() || "",
+        content: ctx.text || "",
+        send: async (content) => {
+          return this.send(ctx.chatId.toString(), content);
+        },
+        reply: async (content) => {
+          return this.reply(ctx.chatId.toString(), ctx.id.toString(), content);
+        },
+      };
+
+      this._events.emit("message", msg);
+    });
   }
 
   async start(): Promise<void> {
@@ -32,7 +88,7 @@ export class TelegramAdapter implements IM.Adapter {
   async reply(
     chatId: string,
     messageId: string,
-    content: string,
+    content: string
   ): Promise<void> {
     await this._bot.api.sendMessage({
       chat_id: chatId,
@@ -47,66 +103,31 @@ export class TelegramAdapter implements IM.Adapter {
     this._forwardCommands = commands;
 
     await this._bot.api.setMyCommands({
-      commands,
+      commands: commands,
     });
   }
 
-  on(event: "message", callback: (event: IM.MessageEvent) => void): void;
-  on(event: "command", callback: (event: IM.CommandEvent) => void): void;
-  on(event: string, callback: (...args: any[]) => void): void {
-    if (event === "message") {
-      this._bot.on("message", (ctx) => {
-        const msg: IM.MessageEvent = {
-          chatId: ctx.chat.id.toString(),
-          messageId: ctx.id.toString(),
-          userId: ctx.from?.id.toString() || "",
-          content: ctx.text || "",
-          send: async (content) => {
-            return this.send(ctx.chatId.toString(), content);
-          },
-          reply: async (content) => {
-            return this.reply(
-              ctx.chatId.toString(),
-              ctx.id.toString(),
-              content,
-            );
-          },
-        };
+  on<T extends keyof IM.AdapterEvents>(
+    event: T,
+    callback: (...args: IM.AdapterEvents[T]) => void
+  ): void {
+    this._events.on(event, callback);
+  }
+}
 
-        callback(msg);
-      });
-    } else if (event === "command") {
-      if (this._forwardCommands.length) {
-        const commandNames = this._forwardCommands.map(
-          (command) => command.command,
-        );
-        this._bot.command(commandNames, (ctx) => {
-          const command = ctx.text?.split(" ")[0].substring(1);
+function parseCommand(content: string) {
+  const isCommand = content.startsWith("/");
 
-          if (!command) {
-            return;
-          }
+  if (!isCommand) {
+    return;
+  }
 
-          const evt: IM.CommandEvent = {
-            chatId: ctx.chat.id.toString(),
-            messageId: ctx.id.toString(),
-            userId: ctx.from?.id.toString() || "",
-            command: command,
-            args: ctx.args,
-            send: async (content) => {
-              return this.send(ctx.chatId.toString(), content);
-            },
-            reply: async (content) => {
-              return this.reply(
-                ctx.chatId.toString(),
-                ctx.id.toString(),
-                content,
-              );
-            },
-          };
-          callback(evt);
-        });
-      }
-    }
+  const [command, args] = content.split(" ");
+
+  if (command) {
+    return {
+      command: command.slice(1),
+      args,
+    };
   }
 }
