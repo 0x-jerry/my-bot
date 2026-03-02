@@ -6,7 +6,6 @@ export interface CagentAdapterOptions {
 }
 
 export class CagentAdapter implements Agent.Adapter {
-  id = "cagent";
   name = "Cagent";
   description = "Adapter for cagent API";
 

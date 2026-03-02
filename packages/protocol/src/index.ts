@@ -4,7 +4,6 @@ export namespace Agent {
    * This interface defines how the bridge interacts with different agent backends.
    */
   export interface Adapter {
-    id: string;
     name: string;
     description: string;
 
@@ -140,7 +139,6 @@ export namespace IM {
    * IM Adapter Interface
    */
   export interface Adapter {
-    id: string;
     name: string;
 
     /**
