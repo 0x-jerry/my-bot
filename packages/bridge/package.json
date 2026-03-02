@@ -14,7 +14,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.24.0",
   "dependencies": {
-    "@0x-jerry/utils": "^6.2.0",
+    "@0x-jerry/utils": "^6.3.0",
     "@my-bot/spec": "workspace:*"
   },
   "devDependencies": {
