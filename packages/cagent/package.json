@@ -5,14 +5,14 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx src/dev.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@my-bot/protocol": "workspace:*",
-    "axios": "^1.6.8"
+    "got": "^14.6.6"
   }
 }
