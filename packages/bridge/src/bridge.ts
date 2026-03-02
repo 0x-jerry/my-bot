@@ -68,21 +68,19 @@ export class BotBridge {
     console.log("Bridge stopped");
   }
 
-  async _handleMessage(event: IM.MessageEvent): Promise<void> {
+  async _handleMessage(evt: IM.MessageEvent): Promise<void> {
     try {
-      let sessionId = this._chatSessionMap.get(event.chatId);
+      let sessionId = this._chatSessionMap.get(evt.chatId);
 
       if (!sessionId) {
         const session = await this.agent.sessions.create();
         sessionId = session.id;
-        this._chatSessionMap.set(event.chatId, sessionId);
+        this._chatSessionMap.set(evt.chatId, sessionId);
 
         // Auto-select the first available agent for a new session
         const agent = (await this.agent.agents()).at(0);
         if (!agent) {
-          await this.im.reply(
-            event.chatId,
-            event.messageId,
+          await evt.send(
             "No available agent found. Please contact the administrator.",
           );
           return;
@@ -90,9 +88,7 @@ export class BotBridge {
 
         await this.agent.useAgent(sessionId, agent.id);
 
-        await this.im.reply(
-          event.chatId,
-          event.messageId,
+        await evt.send(
           `Session ${sessionId} created. Auto-selected agent ${agent.name}`,
         );
       }
@@ -101,7 +97,7 @@ export class BotBridge {
         throw new Error("Failed to create or retrieve session ID");
       }
 
-      const stream = this.agent.messages.send(sessionId, event.content);
+      const stream = this.agent.messages.send(sessionId, evt.content);
 
       let responseText = "";
       for await (const streamEvent of stream) {
@@ -112,10 +108,7 @@ export class BotBridge {
           case "stream_stopped":
             // Final response is already sent if we're doing incremental updates
             // But for now, let's just send the whole thing at the end for simplicity
-            await this.im.send(
-              event.chatId,
-              responseText || "No response received.",
-            );
+            await evt.send(responseText || "No response received.");
             break;
           case "agent_choice":
             if (streamEvent.content) {
@@ -124,21 +117,19 @@ export class BotBridge {
             break;
           case "tool_call":
             // Handle tool calls if needed
-            await this.im.send(
-              event.chatId,
-              `Tool call requested: ${streamEvent.tool_call?.name}`,
+            await evt.send(
+              `Tool call complete: ${streamEvent.tool_call?.name}`,
             );
             break;
           case "error":
-            await this.im.send(event.chatId, `Error: ${streamEvent.error}`);
+            await evt.send(`Error: ${streamEvent.error}`);
             break;
           default:
             break;
         }
       }
     } catch (error) {
-      await this.im.send(
-        event.chatId,
+      await evt.send(
         `Sorry, I encountered an error processing your message: ${error}`,
       );
     }
@@ -154,40 +145,28 @@ export class BotBridge {
 
     const commandsHandle: CommandHandleMap = {
       async start(evt) {
-        await im.reply(
-          evt.chatId,
-          evt.messageId,
+        await evt.reply(
           "Welcome! I am your AI assistant. How can I help you today?",
         );
       },
       async agents(evt) {
         const agents = await agent.agents();
         const agentList = agents
-          .map(
-            (a: Agent.AgentInfo) => `- ${a.name} (${a.id}): ${a.description}`,
-          )
+          .map((a) => `- ${a.name} (${a.id}): ${a.description}`)
           .join("\n");
-        await im.reply(
-          evt.chatId,
-          evt.messageId,
-          `Available agents:\n${agentList}`,
-        );
+
+        await evt.reply(`Available agents:\n${agentList}`);
       },
       async new(evt) {
         const session = await agent.sessions.create();
         bridge._chatSessionMap.set(evt.chatId, session.id);
-        await im.reply(
-          evt.chatId,
-          evt.messageId,
-          `New session created with ID: ${session.id}`,
-        );
+
+        await evt.reply(`New session created with ID: ${session.id}`);
       },
       async "change-agent"(evt) {
         const agentId = evt.args;
         if (!agentId) {
-          await im.reply(
-            evt.chatId,
-            evt.messageId,
+          await evt.reply(
             "Please specify an agent ID. Usage: /change-agent <agent_id>",
           );
           return;
@@ -196,34 +175,28 @@ export class BotBridge {
         try {
           const sessionId = bridge._chatSessionMap.get(evt.chatId);
           if (!sessionId) {
-            await im.reply(
-              evt.chatId,
-              evt.messageId,
+            await evt.reply(
               "No active session found. Please start a new session first.",
             );
             return;
           }
 
           await agent.useAgent(sessionId, agentId);
-          await im.reply(
-            evt.chatId,
-            evt.messageId,
+          await evt.reply(
             `Agent ${agentId} selected for current session ${sessionId}`,
           );
         } catch (error) {
-          await im.reply(
-            evt.chatId,
-            evt.messageId,
-            `Failed to select agent ${agentId}: ${error}`,
-          );
+          await evt.reply(`Failed to select agent ${agentId}: ${error}`);
         }
       },
       async sessions(evt) {
         const sessions = await agent.sessions.list();
 
-        const msg = sessions.map((n) => `${n.title} (${n.id})`).join("\n");
+        const sessionsString = sessions
+          .map((n) => `- ${n.title} (${n.id})`)
+          .join("\n");
 
-        await im.reply(evt.chatId, evt.messageId, msg);
+        await evt.reply(`Available sessions:\n${sessionsString}`);
       },
       async resume(evt) {
         const sessionId = evt.args!;
@@ -239,6 +212,7 @@ export class BotBridge {
         }
 
         bridge._chatSessionMap.set(evt.chatId, sessionId);
+        evt.reply(`Resumed session ${sessionId}`);
       },
     };
 
@@ -249,18 +223,10 @@ export class BotBridge {
         try {
           await fn(evt);
         } catch (error) {
-          await im.reply(
-            evt.chatId,
-            evt.messageId,
-            `Command execute failed! Error: ${String(error)}`,
-          );
+          await evt.reply(`Command execute failed! Error: ${String(error)}`);
         }
       } else {
-        await im.reply(
-          evt.chatId,
-          evt.messageId,
-          `Command ${evt.command} not found!`,
-        );
+        await evt.reply(`Command ${evt.command} not found!`);
       }
     };
   }

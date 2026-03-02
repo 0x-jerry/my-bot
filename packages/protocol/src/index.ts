@@ -77,7 +77,7 @@ export namespace Agent {
     /**
      * Interrupt message processing
      */
-    interrupt?(sessionId: string, messageId: string): Promise<boolean>
+    interrupt?(sessionId: string, messageId: string): Promise<boolean>;
 
     /**
      * Delete a session by ID.
@@ -179,17 +179,20 @@ export namespace IM {
     on(event: "command", callback: (event: CommandEvent) => void): void;
   }
 
-  export interface MessageEvent {
+  export interface EventBase {
     chatId: string;
     messageId: string;
     userId: string;
+
+    send(content: string): Promise<void>;
+    reply(content: string): Promise<void>;
+  }
+
+  export interface MessageEvent extends EventBase {
     content: string;
   }
 
-  export interface CommandEvent {
-    chatId: string;
-    messageId: string;
-    userId: string;
+  export interface CommandEvent extends EventBase {
     command: string;
     args?: string | null;
   }

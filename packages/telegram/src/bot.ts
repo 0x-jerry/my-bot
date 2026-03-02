@@ -13,13 +13,13 @@ export class TelegramAdapter implements IM.Adapter {
   }
 
   async start(): Promise<void> {
-    await this._bot.start()
-    console.log('telegram bot started')
+    await this._bot.start();
+    console.log("telegram bot started");
   }
 
   async stop(): Promise<void> {
-    await this._bot.stop()
-    console.log('telegram bot stopped')
+    await this._bot.stop();
+    console.log("telegram bot stopped");
   }
 
   async send(chatId: string, text: string): Promise<void> {
@@ -32,14 +32,14 @@ export class TelegramAdapter implements IM.Adapter {
   async reply(
     chatId: string,
     messageId: string,
-    content: string
+    content: string,
   ): Promise<void> {
     await this._bot.api.sendMessage({
       chat_id: chatId,
       text: content,
       reply_parameters: {
         message_id: parseInt(messageId),
-      }
+      },
     });
   }
 
@@ -61,18 +61,30 @@ export class TelegramAdapter implements IM.Adapter {
           messageId: ctx.id.toString(),
           userId: ctx.from?.id.toString() || "",
           content: ctx.text || "",
+          send: async (content) => {
+            return this.send(ctx.chatId.toString(), content);
+          },
+          reply: async (content) => {
+            return this.reply(
+              ctx.chatId.toString(),
+              ctx.id.toString(),
+              content,
+            );
+          },
         };
 
         callback(msg);
       });
     } else if (event === "command") {
       if (this._forwardCommands.length) {
-        const commandNames = this._forwardCommands.map((command) => command.command);
+        const commandNames = this._forwardCommands.map(
+          (command) => command.command,
+        );
         this._bot.command(commandNames, (ctx) => {
-          const command = ctx.text?.split(' ')[0].substring(1)
+          const command = ctx.text?.split(" ")[0].substring(1);
 
           if (!command) {
-            return
+            return;
           }
 
           const evt: IM.CommandEvent = {
@@ -80,14 +92,21 @@ export class TelegramAdapter implements IM.Adapter {
             messageId: ctx.id.toString(),
             userId: ctx.from?.id.toString() || "",
             command: command,
-            args: ctx.args
+            args: ctx.args,
+            send: async (content) => {
+              return this.send(ctx.chatId.toString(), content);
+            },
+            reply: async (content) => {
+              return this.reply(
+                ctx.chatId.toString(),
+                ctx.id.toString(),
+                content,
+              );
+            },
           };
           callback(evt);
-        })
+        });
       }
     }
-
-    // TODO: Implement event handling
-    console.log(`Registering event handler for ${event}`);
   }
 }
