@@ -230,4 +230,20 @@ export class BotBridge {
       }
     };
   }
+
+  restoreFromData(data: BotBridgeData) {
+    this._chatSessionMap = new Map(Object.entries(data.chatSession));
+  }
+
+  data(): BotBridgeData {
+    const data: BotBridgeData = {
+      chatSession: Object.fromEntries(this._chatSessionMap.entries()),
+    };
+
+    return data;
+  }
+}
+
+export interface BotBridgeData {
+  chatSession: Record<string, string>;
 }
