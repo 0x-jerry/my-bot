@@ -58,9 +58,10 @@ class CagentSessionsAdapter implements Agent.SessionsAdapter {
     const response = await got
       .post(`${this._baseUrl}/api/sessions`, { json: {} })
       .json();
+
     // Map Docker cagent SessionsResponse to Session interface
     const sessionResponse = response as any;
-    return {
+    const session: Agent.Session = {
       id: sessionResponse.id,
       title: sessionResponse.title || "",
       metadata: {
@@ -71,14 +72,20 @@ class CagentSessionsAdapter implements Agent.SessionsAdapter {
         workingDir: sessionResponse.working_dir,
       },
     };
+
+    // Enable yolo mode
+    await got.post(`${this._baseUrl}/api/sessions/${session.id}/tools/toggle`);
+
+    return session;
   }
 
   async list(): Promise<Agent.Session[]> {
     const response = await got
       .get(`${this._baseUrl}/api/sessions`)
       .json<any[]>();
+
     // Map Docker cagent SessionsResponse array to Session interface
-    return (response || []).map((sessionResponse: any) => ({
+    return (response || []).map((sessionResponse) => ({
       id: sessionResponse.id,
       title: sessionResponse.title || "",
       metadata: {
@@ -212,24 +219,24 @@ class CagentMessageAdapter implements Agent.MessagesAdapter {
         baseEvent.tool_call = {
           id: eventData.tool_call.id,
           name: eventData.tool_call.function.name,
-          arguments: eventData.tool_call.function.arguments
+          arguments: eventData.tool_call.function.arguments,
         };
         break;
 
       case "tool_call_response":
         // Map to tool_call_response with content
         baseEvent.type = "tool_call_response";
-        baseEvent.content = eventData.response
+        baseEvent.content = eventData.response;
         baseEvent.tool_call = {
           id: eventData.tool_call.id,
           name: eventData.tool_call.function.name,
-          arguments: eventData.tool_call.function.arguments
+          arguments: eventData.tool_call.function.arguments,
         };
         break;
 
       case "error":
         baseEvent.type = "error";
-        baseEvent.content = eventData.error
+        baseEvent.content = eventData.error;
         break;
 
       default:

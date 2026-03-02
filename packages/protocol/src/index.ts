@@ -73,6 +73,12 @@ export namespace Agent {
      * Send messages to the agent in a session and get a stream of events.
      */
     send(sessionId: string, message: string): AsyncIterable<StreamEvent>;
+
+    /**
+     * Interrupt message processing
+     */
+    interrupt?(sessionId: string, messageId: string): Promise<boolean>
+
     /**
      * Delete a session by ID.
      */
