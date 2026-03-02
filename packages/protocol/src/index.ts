@@ -35,9 +35,9 @@ export namespace Agent {
   }
 
   export interface AgentInfo {
-    id: string
-    name: string
-    description: string
+    id: string;
+    name: string;
+    description: string;
   }
 
   export interface SessionsAdapter {
@@ -102,7 +102,6 @@ export namespace Agent {
     | "stream_stopped"
     | "agent_choice"
     | "tool_call"
-    | "tool_call_confirmation"
     | "tool_call_response"
     | "error";
 
@@ -169,9 +168,9 @@ export namespace IM {
     /**
      * Register a callback to handle incoming messages.
      */
-    on(event: 'message', callback: (event: MessageEvent) => void): void;
+    on(event: "message", callback: (event: MessageEvent) => void): void;
 
-    on(event: 'command', callback: (event: CommandEvent) => void): void;
+    on(event: "command", callback: (event: CommandEvent) => void): void;
   }
 
   export interface MessageEvent {
@@ -186,6 +185,6 @@ export namespace IM {
     messageId: string;
     userId: string;
     command: string;
-    args?: string | null
+    args?: string | null;
   }
 }

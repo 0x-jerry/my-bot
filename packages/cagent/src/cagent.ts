@@ -196,15 +196,44 @@ class CagentMessageAdapter implements Agent.MessagesAdapter {
       case "stream_started":
         baseEvent.type = "stream_started";
         break;
+
       case "stream_stopped":
         baseEvent.type = "stream_stopped";
         break;
+
       case "agent_choice":
         baseEvent.type = "agent_choice";
         baseEvent.content = eventData.content;
         break;
 
+      case "tool_call":
+        // Map to tool_call with ToolCall object
+        baseEvent.type = "tool_call";
+        baseEvent.tool_call = {
+          id: eventData.tool_call.id,
+          name: eventData.tool_call.function.name,
+          arguments: eventData.tool_call.function.arguments
+        };
+        break;
+
+      case "tool_call_response":
+        // Map to tool_call_response with content
+        baseEvent.type = "tool_call_response";
+        baseEvent.content = eventData.response
+        baseEvent.tool_call = {
+          id: eventData.tool_call.id,
+          name: eventData.tool_call.function.name,
+          arguments: eventData.tool_call.function.arguments
+        };
+        break;
+
+      case "error":
+        baseEvent.type = "error";
+        baseEvent.content = eventData.error
+        break;
+
       default:
+        // Unknown event type, skip it
         return null;
     }
 
