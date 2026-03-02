@@ -1,0 +1,26 @@
+{
+  "name": "my-bot",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.23.0",
+  "dependencies": {
+    "@my-bot/bridge": "workspace:*",
+    "@my-bot/cagent": "workspace:*",
+    "@my-bot/spec": "workspace:*",
+    "@my-bot/telegram": "workspace:*",
+    "dotenv": "^17.3.1",
+    "global-agent": "^3.0.0",
+    "undici": "^7.22.0"
+  },
+  "devDependencies": {
+    "@types/global-agent": "^3.0.0",
+    "@types/node": "^25.3.0"
+  }
+}
