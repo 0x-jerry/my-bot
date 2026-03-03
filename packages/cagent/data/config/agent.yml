@@ -11,7 +11,7 @@ agents:
     model: dashscope
     description: Test agent
     instruction: You are a helpful assistant.
-
+    skills: true
     toolsets:
       - type: filesystem
       - type: shell
