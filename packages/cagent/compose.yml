@@ -10,4 +10,14 @@ services:
       - ./data/work:/work
     ports:
       - 9756:8080
-    entrypoint: [ "cagent", "serve", "api", "/config/agent.yml", "--listen", ":8080", "--session-db", "/config/session.db" ]
+    entrypoint:
+      [
+        "cagent",
+        "serve",
+        "api",
+        "/config/agent.yml",
+        "--listen",
+        ":8080",
+        "--session-db",
+        "/config/session.db",
+      ]

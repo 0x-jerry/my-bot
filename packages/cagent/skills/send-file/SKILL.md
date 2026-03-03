@@ -1,5 +1,5 @@
 ---
-title: send-file
+name: send-file-to-user
 description: Send a file to the specified user.
 ---
 
@@ -14,9 +14,12 @@ When you need to send a file to the user, you can use this skill.
 
 ## Usage
 
-Before you run `script/send-file.js` script, you need to check if the user provide the userId,
+Before you run `send-file.js` script, you need to check if the user provide the userId,
 If not, you need to ask for it before run this script.
 
+Script files is placed in `~/.claude/skills/send-file/scripts`
+
 ```bash
-node scripts/send-file.js <user-id> <file-path>
+# cwd: ~/.claude/skills/send-file/scripts
+node send-file.js <user-id> <file-path>
 ```

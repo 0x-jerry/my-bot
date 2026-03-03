@@ -1,7 +1,7 @@
 models:
   dashscope:
     provider: openai
-    model: qwen-turbo
+    model: glm-5
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
     max_tokens: 6400
     temperature: 0.7

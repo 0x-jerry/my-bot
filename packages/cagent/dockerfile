@@ -7,7 +7,7 @@ RUN curl -L https://gh-proxy.org/https://github.com/docker/cagent/releases/lates
 RUN mv cagent /usr/local/bin/
 RUN chmod +x /usr/local/bin/cagent
 
-RUN mkdir ~/.agents
-COPY skills/ /root/.agents/skills/
+RUN mkdir ~/.claude
+COPY skills/ /root/.claude/skills/
 
 WORKDIR /work
