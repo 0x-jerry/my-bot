@@ -93,7 +93,14 @@ export namespace Agent {
   export interface Session {
     id: string;
     title: string;
-    metadata?: Record<string, any>;
+    metadata?: {
+      [key: string]: any;
+      createdAt?: string;
+      numMessages?: number;
+      workingDir?: string;
+      inputTokens?: number;
+      outputTokens?: number;
+    };
   }
 
   export interface Message {
@@ -174,12 +181,15 @@ export namespace IM {
      */
     setCommands(commands: Common.Command[]): Promise<void>;
 
-    on<T extends keyof AdapterEvents>(event: T, callback: (...args: AdapterEvents[T]) =>void): void;
+    on<T extends keyof AdapterEvents>(
+      event: T,
+      callback: (...args: AdapterEvents[T]) => void,
+    ): void;
   }
 
   export interface AdapterEvents {
-    command: [event: CommandEvent]
-    message: [event: MessageEvent]
+    command: [event: CommandEvent];
+    message: [event: MessageEvent];
   }
 
   export interface EventBase {

@@ -1,4 +1,4 @@
-import { createLogger, Logger } from "@0x-jerry/utils";
+import { createLogger, type Logger } from "@0x-jerry/utils";
 import type { Agent, Common, IM } from "@my-bot/spec";
 import { name as pkgName } from "../package.json";
 
@@ -34,6 +34,10 @@ const COMMANDS: Common.Command[] = [
     command: "resume",
     description: "Resume a session by session id, Usage: /resume <session-id>",
   },
+  {
+    command: "usage",
+    description: "Show the current session usage.",
+  },
 ];
 
 export class BotBridge {
@@ -60,7 +64,7 @@ export class BotBridge {
     await Promise.all([this.im.start(), this.agent.start()]);
 
     this.im.on("message", (event: IM.MessageEvent) =>
-      this._handleMessage(event)
+      this._handleMessage(event),
     );
 
     const commandHandler = this._createCommandHandler();
@@ -90,7 +94,7 @@ export class BotBridge {
         const agent = (await this.agent.agents()).at(0);
         if (!agent) {
           await evt.send(
-            "No available agent found. Please contact the administrator."
+            "No available agent found. Please contact the administrator.",
           );
           return;
         }
@@ -98,7 +102,7 @@ export class BotBridge {
         await this.agent.useAgent(sessionId, agent.id);
 
         await evt.send(
-          `Session ${sessionId} created. Auto-selected agent ${agent.name}`
+          `Session ${sessionId} created. Auto-selected agent ${agent.name}`,
         );
       }
 
@@ -127,7 +131,7 @@ export class BotBridge {
           case "tool_call":
             // Handle tool calls if needed
             await evt.send(
-              `Tool call complete: ${streamEvent.tool_call?.name}`
+              `Tool call complete: ${streamEvent.tool_call?.name}`,
             );
             break;
           case "error":
@@ -139,7 +143,7 @@ export class BotBridge {
       }
     } catch (error) {
       await evt.send(
-        `Sorry, I encountered an error processing your message: ${error}`
+        `Sorry, I encountered an error processing your message: ${error}`,
       );
     }
   }
@@ -155,7 +159,7 @@ export class BotBridge {
     const commandsHandle: CommandHandleMap = {
       async start(evt) {
         await evt.reply(
-          "Welcome! I am your AI assistant. How can I help you today?"
+          "Welcome! I am your AI assistant. How can I help you today?",
         );
       },
       async agents(evt) {
@@ -169,6 +173,16 @@ export class BotBridge {
       async new(evt) {
         const session = await agent.sessions.create();
         bridge._chatSessionMap.set(evt.chatId, session.id);
+        const firstAgent = (await agent.agents()).at(0);
+
+        if (!firstAgent) {
+          await evt.reply(
+            "No available agent found. Please contact the administrator.",
+          );
+          return;
+        }
+
+        await agent.useAgent(session.id, firstAgent.id);
 
         await evt.reply(`New session created with ID: ${session.id}`);
       },
@@ -176,7 +190,7 @@ export class BotBridge {
         const agentId = evt.args;
         if (!agentId) {
           await evt.reply(
-            "Please specify an agent ID. Usage: /change-agent <agent_id>"
+            "Please specify an agent ID. Usage: /change-agent <agent_id>",
           );
           return;
         }
@@ -185,14 +199,14 @@ export class BotBridge {
           const sessionId = bridge._chatSessionMap.get(evt.chatId);
           if (!sessionId) {
             await evt.reply(
-              "No active session found. Please start a new session first."
+              "No active session found. Please start a new session first.",
             );
             return;
           }
 
           await agent.useAgent(sessionId, agentId);
           await evt.reply(
-            `Agent ${agentId} selected for current session ${sessionId}`
+            `Agent ${agentId} selected for current session ${sessionId}`,
           );
         } catch (error) {
           await evt.reply(`Failed to select agent ${agentId}: ${error}`);
@@ -222,6 +236,22 @@ export class BotBridge {
 
         bridge._chatSessionMap.set(evt.chatId, sessionId);
         evt.reply(`Resumed session ${sessionId}`);
+      },
+      async usage(evt) {
+        const sessionId = bridge._chatSessionMap.get(evt.chatId);
+
+        if (!sessionId) {
+          await evt.reply(
+            "No active session found. Please start a new session first.",
+          );
+          return;
+        }
+
+        const session = await agent.sessions.get(sessionId);
+
+        await evt.reply(
+          `Session (${sessionId})${session.title} usage:\n${JSON.stringify(session.metadata, null, 2)}`,
+        );
       },
     };
 
