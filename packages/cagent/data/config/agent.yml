@@ -9,11 +9,27 @@ models:
 agents:
   root:
     model: dashscope
-    description: Test agent
-    instruction: You are a helpful assistant.
+    description: Chat agent
+    instruction: |
+      You are a personal assistant. You helper user to complete daily tasks.
+      You can assign tasks to other agents.
     skills: true
+    sub_agents: [developer]
+    toolsets:
+      - type: think
+      - type: fetch
+        timeout: 30
+      - type: memory
+        path: /config/memory.db
+
+  developer:
+    model: dashscope
+    description: Developer agent
+    instruction: You are a expert developer. You write TypeScript code.
     toolsets:
       - type: filesystem
       - type: shell
       - type: fetch
         timeout: 30
+      - type: todo
+        shared: true
