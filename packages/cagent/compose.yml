@@ -1,0 +1,13 @@
+services:
+  agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./data/config:/config
+      - ./data/work:/work
+    ports:
+      - 9756:8080
+    entrypoint: [ "cagent", "serve", "api", "/config/agent.yml", "--listen", ":8080", "--session-db", "/config/session.db" ]

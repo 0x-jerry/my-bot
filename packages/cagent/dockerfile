@@ -1,0 +1,8 @@
+FROM golang:1
+
+# COPY ./cagent /usr/local/bin/
+RUN curl -L https://gh-proxy.org/https://github.com/docker/cagent/releases/latest/download/cagent-linux-amd64 -o cagent
+RUN mv cagent /usr/local/bin/
+RUN chmod +x /usr/local/bin/cagent
+
+WORKDIR /work
