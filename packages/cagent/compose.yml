@@ -8,6 +8,7 @@ services:
     volumes:
       - ./data/config:/config
       - ./data/work:/work
+      - ./skills:/root/.claude/skills:ro
     ports:
       - 9756:8080
     entrypoint:
@@ -20,4 +21,14 @@ services:
         ":8080",
         "--session-db",
         "/config/session.db",
+        "--debug",
+        "--log-file",
+        "/config/debug.agent.log",
       ]
+
+  search-mcp:
+    image: ghcr.io/aas-ee/open-web-search:v1.2.0
+    environment:
+      MODE: http
+    expose:
+      - 3000

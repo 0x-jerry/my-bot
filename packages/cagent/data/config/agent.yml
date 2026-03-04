@@ -21,6 +21,11 @@ agents:
         timeout: 30
       - type: memory
         path: /config/memory.db
+      - type: mcp
+        remote:
+          url: http://search-mcp:3000/sse
+          transport_type: sse
+        tools: [search]
 
   developer:
     model: dashscope
