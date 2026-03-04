@@ -41,10 +41,10 @@
   },
   "dependencies": {
     "@0x-jerry/utils": "^6.2.0",
-    "@hono/node-server": "^1.19.9",
+    "@hono/node-server": "^1.19.10",
     "@prisma/adapter-better-sqlite3": "^7.4.1",
     "@prisma/client": "^7.4.1",
-    "hono": "^4.12.2",
+    "hono": "^4.12.4",
     "openai": "^6.24.0",
     "zod": "^4.3.6"
   }
