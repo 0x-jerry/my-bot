@@ -87,7 +87,8 @@ export class BotBridge {
 
       if (!sessionId) {
         const session = await this.agent.sessions.create({
-          workingDir: `c-${sessionId}`
+          // cagent not support non-exists folder
+          // workingDir: `c-${sessionId}`
         });
 
         sessionId = session.id;
