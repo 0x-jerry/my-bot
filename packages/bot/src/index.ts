@@ -10,6 +10,7 @@ setupGlobalProxyAgent();
 
 const config = {
   persistFile: path.resolve("./data.json"),
+  workspaceRoot: process.env.WORKSPACE_ROOT,
   im: {
     telegram: {
       token: process.env.TELEGRAM_BOT_TOKEN,
@@ -33,6 +34,7 @@ const agent = new CagentAdapter({
 const bridge = new BotBridge({
   im,
   agent,
+  workspaceRoot: config.workspaceRoot!,
   debug: true,
 });
 

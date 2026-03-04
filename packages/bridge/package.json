@@ -18,6 +18,7 @@
     "@my-bot/spec": "workspace:*"
   },
   "devDependencies": {
+    "@types/node": "^25.3.3",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"

@@ -1,10 +1,13 @@
 import { createLogger, type Logger } from "@0x-jerry/utils";
 import type { Agent, Common, IM } from "@my-bot/spec";
 import { name as pkgName } from "../package.json";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
 
 export interface BridgeOptions {
   im: IM.Adapter;
   agent: Agent.Adapter;
+  workspaceRoot: string;
   debug?: boolean;
 }
 
@@ -44,6 +47,7 @@ export class BotBridge {
   readonly im: IM.Adapter;
   readonly agent: Agent.Adapter;
   readonly log?: Logger;
+  readonly workspaceRoot: string;
 
   /**
    * ChatId => sessionId
@@ -53,6 +57,7 @@ export class BotBridge {
   constructor(options: BridgeOptions) {
     this.im = options.im;
     this.agent = options.agent;
+    this.workspaceRoot = options.workspaceRoot;
 
     this.im.setCommands(COMMANDS);
     if (options.debug) {
@@ -86,32 +91,9 @@ export class BotBridge {
       let sessionId = this._chatSessionMap.get(evt.chatId);
 
       if (!sessionId) {
-        const session = await this.agent.sessions.create({
-          // cagent not support non-exists folder
-          // workingDir: `c-${sessionId}`
-        });
+        const session = await this._createSession(evt.chatId);
 
         sessionId = session.id;
-        this._chatSessionMap.set(evt.chatId, sessionId);
-
-        // Auto-select the first available agent for a new session
-        const agent = (await this.agent.agents()).at(0);
-        if (!agent) {
-          await evt.send(
-            "No available agent found. Please contact the administrator.",
-          );
-          return;
-        }
-
-        await this.agent.useAgent(sessionId, agent.id);
-
-        await evt.send(
-          `Session ${sessionId} created. Auto-selected agent ${agent.name}`,
-        );
-      }
-
-      if (!sessionId) {
-        throw new Error("Failed to create or retrieve session ID");
       }
 
       const stream = this.agent.messages.send(sessionId, evt.content);
@@ -175,18 +157,7 @@ export class BotBridge {
         await evt.reply(`Available agents:\n${agentList}`);
       },
       async new(evt) {
-        const session = await agent.sessions.create();
-        bridge._chatSessionMap.set(evt.chatId, session.id);
-        const firstAgent = (await agent.agents()).at(0);
-
-        if (!firstAgent) {
-          await evt.reply(
-            "No available agent found. Please contact the administrator.",
-          );
-          return;
-        }
-
-        await agent.useAgent(session.id, firstAgent.id);
+        const session = await bridge._createSession(evt.chatId);
 
         await evt.reply(`New session created with ID: ${session.id}`);
       },
@@ -285,6 +256,27 @@ export class BotBridge {
     };
 
     return data;
+  }
+
+  async _createSession(chatId: string) {
+    const workingDir = `c-${chatId}`;
+    await mkdir(path.join(this.workspaceRoot, workingDir));
+    const session = await this.agent.sessions.create({
+      workingDir,
+    });
+
+    const sessionId = session.id;
+    this._chatSessionMap.set(chatId, sessionId);
+
+    // Auto-select the first available agent for a new session
+    const firstAgent = (await this.agent.agents()).at(0);
+    if (!firstAgent) {
+      throw new Error(`No available agent found!`);
+    }
+
+    await this.agent.useAgent(sessionId, firstAgent.id);
+
+    return session;
   }
 }
 
