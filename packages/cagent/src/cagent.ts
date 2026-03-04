@@ -54,9 +54,13 @@ export class CagentAdapter implements Agent.Adapter {
 class CagentSessionsAdapter implements Agent.SessionsAdapter {
   constructor(protected _baseUrl: string) {}
 
-  async create(): Promise<Agent.Session> {
+  async create(opt?: Agent.SessionCreateOptions): Promise<Agent.Session> {
     const response = await got
-      .post(`${this._baseUrl}/api/sessions`, { json: {} })
+      .post(`${this._baseUrl}/api/sessions`, {
+        json: {
+          working_dir: opt?.workingDir,
+        },
+      })
       .json();
 
     // Map Docker cagent SessionsResponse to Session interface

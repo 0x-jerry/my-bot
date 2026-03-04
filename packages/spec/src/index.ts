@@ -40,11 +40,15 @@ export namespace Agent {
     description: string;
   }
 
+  export interface SessionCreateOptions {
+    workingDir?: string;
+  }
+
   export interface SessionsAdapter {
     /**
      * Create a new session with this agent.
      */
-    create(): Promise<Session>;
+    create(opt?: SessionCreateOptions): Promise<Session>;
     /**
      * List all sessions for this agent.
      */

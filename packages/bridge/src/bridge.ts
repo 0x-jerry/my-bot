@@ -86,7 +86,10 @@ export class BotBridge {
       let sessionId = this._chatSessionMap.get(evt.chatId);
 
       if (!sessionId) {
-        const session = await this.agent.sessions.create();
+        const session = await this.agent.sessions.create({
+          workingDir: `c-${sessionId}`
+        });
+
         sessionId = session.id;
         this._chatSessionMap.set(evt.chatId, sessionId);
 
