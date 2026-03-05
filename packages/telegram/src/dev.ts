@@ -1,6 +1,6 @@
 import { loadEnvFile } from "node:process";
 import { setupProxyAgent } from "./utils";
-import { TelegramAdapter } from "./bot";
+import { TelegramAdapter } from "./adapter";
 
 loadEnvFile();
 setupProxyAgent();

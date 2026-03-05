@@ -1,1 +1,1 @@
-export { TelegramAdapter } from "./bot";
+export { TelegramAdapter } from "./adapter";

@@ -87,6 +87,18 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.27.1
         version: 1.27.1(zod@4.3.6)
+      '@my-bot/bridge':
+        specifier: workspace:*
+        version: link:../bridge
+      '@my-bot/cagent':
+        specifier: workspace:*
+        version: link:../cagent
+      '@my-bot/spec':
+        specifier: workspace:*
+        version: link:../spec
+      '@my-bot/telegram':
+        specifier: workspace:*
+        version: link:../telegram
       '@prisma/adapter-better-sqlite3':
         specifier: ^7.4.1
         version: 7.4.2

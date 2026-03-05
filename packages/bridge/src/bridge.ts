@@ -250,7 +250,7 @@ export class BotBridge {
     this._chatSessionMap = new Map(Object.entries(data.chatSession));
   }
 
-  data(): BotBridgeData {
+  getData(): BotBridgeData {
     const data: BotBridgeData = {
       chatSession: Object.fromEntries(this._chatSessionMap.entries()),
     };

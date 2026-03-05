@@ -189,6 +189,11 @@ export namespace IM {
       event: T,
       callback: (...args: AdapterEvents[T]) => void,
     ): void;
+
+    /**
+     * Handle webhook requests.
+     */
+    handleWebhook(req: Request): Promise<Response>;
   }
 
   export interface AdapterEvents {

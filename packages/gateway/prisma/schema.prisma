@@ -16,3 +16,12 @@ model Memory {
 
   memory String
 }
+
+model BotConfig {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name   String @unique
+  config String
+}

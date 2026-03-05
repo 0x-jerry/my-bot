@@ -3,6 +3,7 @@ import got from "got";
 
 export interface CagentAdapterOptions {
   baseUrl: string;
+  debug?: boolean
 }
 
 export class CagentAdapter implements Agent.Adapter {

@@ -1,10 +1,11 @@
 import { createLogger, EventEmitter, type Logger } from "@0x-jerry/utils";
 import type { Common, IM } from "@my-bot/spec";
 import { name as pkgName } from "../package.json";
-import { Bot } from "gramio";
+import { Bot, webhookHandler } from "gramio";
 
 export interface TelegramAdapterOptions {
   token: string;
+  webhook?: string;
   debug?: boolean;
 }
 
@@ -19,7 +20,7 @@ export class TelegramAdapter implements IM.Adapter {
 
   readonly log?: Logger;
 
-  constructor(options: TelegramAdapterOptions) {
+  constructor(readonly options: TelegramAdapterOptions) {
     if (options.debug) {
       this.log = createLogger(pkgName);
     }
@@ -42,7 +43,7 @@ export class TelegramAdapter implements IM.Adapter {
             return this.reply(
               ctx.chatId.toString(),
               ctx.id.toString(),
-              content
+              content,
             );
           },
         };
@@ -69,7 +70,10 @@ export class TelegramAdapter implements IM.Adapter {
   }
 
   async start(): Promise<void> {
-    await this._bot.start();
+    await this._bot.start({
+      webhook: this.options.webhook,
+    });
+
     console.log("telegram bot started");
   }
 
@@ -88,7 +92,7 @@ export class TelegramAdapter implements IM.Adapter {
   async reply(
     chatId: string,
     messageId: string,
-    content: string
+    content: string,
   ): Promise<void> {
     await this._bot.api.sendMessage({
       chat_id: chatId,
@@ -109,9 +113,17 @@ export class TelegramAdapter implements IM.Adapter {
 
   on<T extends keyof IM.AdapterEvents>(
     event: T,
-    callback: (...args: IM.AdapterEvents[T]) => void
+    callback: (...args: IM.AdapterEvents[T]) => void,
   ): void {
     this._events.on(event, callback);
+  }
+
+  async handleWebhook(req: Request): Promise<Response> {
+    if (this.options.webhook) {
+      return webhookHandler(this._bot, "std/http")(req);
+    } else {
+      return new Response(null, { status: 200 });
+    }
   }
 }
 
