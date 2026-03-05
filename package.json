@@ -8,11 +8,9 @@
   },
   "license": "MIT",
   "author": "0x-jerry <x.jerry.wang@gmail.com>",
-  "scripts": {
-    "setup": ""
-  },
   "devDependencies": {
     "@0x-jerry/x-release": "^2.4.1",
+    "@types/node": "^25.3.3",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",

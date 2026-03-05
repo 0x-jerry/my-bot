@@ -11,6 +11,9 @@ importers:
       '@0x-jerry/x-release':
         specifier: ^2.4.1
         version: 2.4.1
+      '@types/node':
+        specifier: ^25.3.3
+        version: 25.3.3
       tsup:
         specifier: ^8.5.1
         version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.6.0)
@@ -54,9 +57,6 @@ importers:
       '@types/global-agent':
         specifier: ^3.0.0
         version: 3.0.0
-      '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
 
   packages/bridge:
     dependencies:
@@ -66,19 +66,6 @@ importers:
       '@my-bot/spec':
         specifier: workspace:*
         version: link:../spec
-    devDependencies:
-      '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.6.0)
-      tsx:
-        specifier: ^4.21.0
-        version: 4.21.0
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
 
   packages/cagent:
     dependencies:
@@ -89,14 +76,13 @@ importers:
         specifier: ^14.6.6
         version: 14.6.6
 
-  packages/spec:
-    devDependencies:
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.6.0)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
+  packages/gateway:
+    dependencies:
+      hono:
+        specifier: ^4.12.5
+        version: 4.12.5
+
+  packages/spec: {}
 
   packages/telegram:
     dependencies:
@@ -122,18 +108,6 @@ importers:
       '@types/global-agent':
         specifier: ^3.0.0
         version: 3.0.0
-      '@types/node':
-        specifier: ^25.3.0
-        version: 25.3.0
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.6.0)
-      tsx:
-        specifier: ^4.21.0
-        version: 4.21.0
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
 
 packages:
 
@@ -520,9 +494,6 @@ packages:
   '@types/http-cache-semantics@4.2.0':
     resolution: {integrity: sha512-L3LgimLHXtGkWikKnsPg0/VFx9OGZaC+eN1u4r+OB1XRqH3meBIAVC2zr1WdMH+RHmnRkqliQAOHNJ/E0j/e0Q==}
 
-  '@types/node@25.3.0':
-    resolution: {integrity: sha512-4K3bqJpXpqfg2XKGK9bpDTc6xO/xoUP/RBWS7AtRMug6zZFaRekiLzjVtAoZMquxoAbzBvy5nxQ7veS5eYzf8A==}
-
   '@types/node@25.3.3':
     resolution: {integrity: sha512-DpzbrH7wIcBaJibpKo9nnSQL0MTRdnWttGyE5haGwK86xgMOkFLp7vEyfQPGLOJh5wNYiJ3V9PmUMDhV9u8kkQ==}
 
@@ -725,6 +696,10 @@ packages:
 
   has-property-descriptors@1.0.2:
     resolution: {integrity: sha512-55JNKuIW+vq4Ke1BjOTjM2YctQIvCT7GFzHwmfZPGo5wnrgkid0YQtnAleFSqumZm4az3n2BS+erby5ipJdgrg==}
+
+  hono@4.12.5:
+    resolution: {integrity: sha512-3qq+FUBtlTHhtYxbxheZgY8NIFnkkC/MR8u5TTsr7YZ3wixryQ3cCwn3iZbg8p8B88iDBBAYSfZDS75t8MN7Vg==}
+    engines: {node: '>=16.9.0'}
 
   http-cache-semantics@4.2.0:
     resolution: {integrity: sha512-dTxcvPXqPvXBQpq5dUr6mEMJX4oIEFv6bwom3FDwKRDsuIjjJGANqhBuoAn9c1RQJIdAKav33ED65E2ys+87QQ==}
@@ -1353,10 +1328,6 @@ snapshots:
 
   '@types/http-cache-semantics@4.2.0': {}
 
-  '@types/node@25.3.0':
-    dependencies:
-      undici-types: 7.18.2
-
   '@types/node@25.3.3':
     dependencies:
       undici-types: 7.18.2
@@ -1588,6 +1559,8 @@ snapshots:
   has-property-descriptors@1.0.2:
     dependencies:
       es-define-property: 1.0.1
+
+  hono@4.12.5: {}
 
   http-cache-semantics@4.2.0: {}
 

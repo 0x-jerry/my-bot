@@ -8,7 +8,5 @@
     "build": "tsup src/index.ts --format esm --dts --clean"
   },
   "devDependencies": {
-    "tsup": "^8.5.1",
-    "typescript": "^5.9.3"
   }
 }
