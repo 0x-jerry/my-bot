@@ -13,12 +13,10 @@ export function setupMCP(app: Hono) {
 
   reigsterTools(mcpServer, memoryTools);
 
-  // Initialize the transport
   const transport = new StreamableHTTPTransport();
 
   app.all("/mcp", async (c) => {
     if (!mcpServer.isConnected()) {
-      // Connect the mcp with the transport
       await mcpServer.connect(transport);
     }
 
