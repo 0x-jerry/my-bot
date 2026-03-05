@@ -1,11 +1,12 @@
+import { loadEnvFile } from "node:process";
 import { BotBridge } from "@my-bot/bridge";
 import { CagentAdapter } from "@my-bot/cagent";
 import { TelegramAdapter } from "@my-bot/telegram";
-import "dotenv/config";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { setupGlobalProxyAgent } from "./proxy";
 
+loadEnvFile();
 setupGlobalProxyAgent();
 
 const config = {

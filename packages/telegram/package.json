@@ -17,7 +17,6 @@
   "dependencies": {
     "@0x-jerry/utils": "^6.3.0",
     "@my-bot/spec": "workspace:*",
-    "dotenv": "^17.3.1",
     "global-agent": "^3.0.0",
     "gramio": "^0.6.0",
     "undici": "^7.22.0"
