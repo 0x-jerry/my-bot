@@ -17,11 +17,11 @@ model Memory {
   memory String
 }
 
-model BotConfig {
+model BotData {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name   String @unique
-  config String
+  name String @unique
+  data String
 }

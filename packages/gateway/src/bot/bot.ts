@@ -1,6 +1,6 @@
 import { BotBridge, BotBridgeData } from "@my-bot/bridge";
 import { Agent, IM } from "@my-bot/spec";
-import { getBotConfig, saveBotConfig } from "./database/config";
+import { getBotData, saveBotData } from "./database/data";
 
 export interface BotOption {
   im: IM.Adapter;
@@ -20,7 +20,7 @@ export class Bot {
   }
 
   async start() {
-    const botData = await getBotConfig<BotBridgeData>(this.name);
+    const botData = await getBotData<BotBridgeData>(this.name);
     if (botData) {
       this.bridge.restoreFromData(botData);
     }
@@ -30,7 +30,7 @@ export class Bot {
 
   async stop() {
     const botData = this.bridge.getData();
-    await saveBotConfig(this.name, botData);
+    await saveBotData(this.name, botData);
 
     await this.bridge.stop();
   }
