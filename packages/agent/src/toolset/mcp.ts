@@ -1,11 +1,11 @@
 import { Tool } from "ai";
-import { ToolSet } from "./types";
+import { LoadedToolset, ToolSet } from "./types";
 import { createMCPClient } from "@ai-sdk/mcp";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
 export async function createMCPToolset(
   config: ToolSet.Mcp,
-): Promise<Record<string, Tool>> {
+): Promise<LoadedToolset> {
   const transport = config.command
     ? new StdioClientTransport({
         command: config.command,
@@ -20,12 +20,16 @@ export async function createMCPToolset(
       : undefined;
 
   if (!transport) {
-    return {};
+    return {
+      toolset: {},
+    };
   }
 
   const client = await createMCPClient({
     transport,
   });
 
-  return client.tools();
+  return {
+    toolset: await client.tools(),
+  };
 }

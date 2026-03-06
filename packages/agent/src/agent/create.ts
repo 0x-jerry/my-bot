@@ -1,23 +1,61 @@
 import { Config } from "../config/types";
-import { ToolLoopAgent } from "ai";
+import { SystemModelMessage, ToolLoopAgent, ToolSet } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { resolveToolsets } from "../toolset";
+import { LoadedToolset } from "../toolset/types";
 
 export async function createAgent(
   id: string,
   config: Config.Root,
   agentConfig: Config.AgentConfig,
 ) {
+  const toolsets = await resolveToolsets(agentConfig.toolset);
+
   const agent = new ToolLoopAgent({
     model: resolveProvider(agentConfig.model, config),
-    instructions: agentConfig.instruction,
-    tools: await resolveToolsets(agentConfig.toolset),
+    instructions: createInstructions(agentConfig, toolsets),
+    tools: resolveTools(toolsets),
   });
 
   return {
     id,
     agent,
   };
+}
+
+function createInstructions(
+  config: Config.AgentConfig,
+  toolsets: LoadedToolset[],
+) {
+  const instructions: SystemModelMessage[] = [];
+
+  if (config.instruction) {
+    instructions.push({
+      role: "system",
+      content: config.instruction,
+    });
+  }
+
+  for (const toolset of toolsets) {
+    if (toolset.instruction) {
+      instructions.push({
+        role: "system",
+        content: toolset.instruction,
+      });
+    }
+  }
+
+  return instructions;
+}
+
+function resolveTools(toolsets: LoadedToolset[]) {
+  const tools: ToolSet = {};
+
+  for (const toolset of toolsets) {
+    Object.assign(tools, toolset.toolset);
+  }
+
+  return tools;
 }
 
 function resolveProvider(model: string, config: Config.Root) {

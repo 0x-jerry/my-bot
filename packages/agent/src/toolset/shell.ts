@@ -1,11 +1,11 @@
-import { tool, Tool } from "ai";
-import { ToolSet } from "./types";
+import { tool } from "ai";
+import { LoadedToolset, ToolSet } from "./types";
 import z from "zod";
 import { exec } from "@0x-jerry/utils/node";
 
 export async function createShellToolset(
   _config: ToolSet.Shell,
-): Promise<Record<string, Tool>> {
+): Promise<LoadedToolset> {
   const shell = tool({
     title: "Shell",
     description: "Run shell commands",
@@ -24,6 +24,8 @@ export async function createShellToolset(
   });
 
   return {
-    shell,
+    toolset: {
+      shell,
+    },
   };
 }

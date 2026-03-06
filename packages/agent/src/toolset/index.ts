@@ -1,24 +1,24 @@
-import { ToolSet } from "ai";
 import { Config } from "../config/types";
 import { createMemoryToolset } from "./memory";
 import { createMCPToolset } from "./mcp";
 import { createShellToolset } from "./shell";
 import { createSkillToolset } from "./skill";
+import { LoadedToolset } from "./types";
 
 /**
  * Resolve toolset from config.
  */
 export async function resolveToolsets(
   toolsetsConfig?: Config.ToolsetConfig[],
-): Promise<ToolSet> {
-  const loadedToolset: ToolSet = {};
+): Promise<LoadedToolset[]> {
+  const loadedToolset: LoadedToolset[] = [];
 
   if (!toolsetsConfig?.length) return loadedToolset;
 
   for (const toolsetConfig of toolsetsConfig) {
     try {
       const toolset = await loadToolset(toolsetConfig);
-      Object.assign(loadedToolset, toolset);
+      loadedToolset.push(toolset);
     } catch (error) {
       console.error(`Failed to load toolset ${toolsetConfig.type}`, error);
     }
@@ -27,7 +27,7 @@ export async function resolveToolsets(
   return loadedToolset;
 }
 
-async function loadToolset(tool: Config.ToolsetConfig) {
+async function loadToolset(tool: Config.ToolsetConfig): Promise<LoadedToolset> {
   switch (tool.type) {
     case "memory":
       return await createMemoryToolset(tool);
@@ -38,6 +38,8 @@ async function loadToolset(tool: Config.ToolsetConfig) {
     case "skill":
       return await createSkillToolset(tool);
     default:
-      return {};
+      return {
+        toolset: {},
+      };
   }
 }

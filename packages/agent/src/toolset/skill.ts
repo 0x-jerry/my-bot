@@ -1,14 +1,14 @@
-import { tool, Tool } from "ai";
+import { tool } from "ai";
 import { z } from "zod";
-import { ToolSet } from "./types";
-import { glob, readdir, readFile } from "node:fs/promises";
+import { LoadedToolset, ToolSet } from "./types";
+import { glob, readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import path from "node:path";
 import matter from "gray-matter";
 
 export async function createSkillToolset(
   config: ToolSet.Skill,
-): Promise<Record<string, Tool>> {
+): Promise<LoadedToolset> {
   const skills = await loadSkills(process.cwd());
 
   const readSkill = tool({
@@ -28,9 +28,26 @@ export async function createSkillToolset(
     },
   });
 
+  if (!Object.keys(skills).length) {
+    return {
+      toolset: {},
+    };
+  }
+
   return {
-    readSkill,
+    instruction: createInstruction(skills),
+    toolset: {
+      "read-skill": readSkill,
+    },
   };
+}
+
+function createInstruction(skills: Record<string, LoadedSkill>) {
+  const skillDescription: string[] = Object.values(skills).map((skill) => {
+    return `- ${skill.name}: ${skill.description}`;
+  });
+
+  return `You can use the "read-skill" tool to read a skill deatil. Avaible skills are:\n${skillDescription.join("\n")}`;
 }
 
 async function loadSkills(cwd: string) {

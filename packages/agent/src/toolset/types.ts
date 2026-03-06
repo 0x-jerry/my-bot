@@ -1,3 +1,5 @@
+import { Tool } from "ai";
+
 export namespace ToolSet {
   export type All = Mcp | Skill | Memory | Shell;
 
@@ -27,7 +29,7 @@ export namespace ToolSet {
     /**
      * The path to the memory file.
      */
-    file?: string
+    file?: string;
     /**
      * The URL of the memory server.
      */
@@ -37,4 +39,9 @@ export namespace ToolSet {
   export interface Shell {
     type: "shell";
   }
+}
+
+export interface LoadedToolset {
+  toolset: Record<string, Tool>;
+  instruction?: string;
 }
