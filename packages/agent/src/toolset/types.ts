@@ -1,4 +1,6 @@
+import { Awaitable } from "@0x-jerry/utils";
 import { Tool } from "ai";
+import { IDisposable } from "../types";
 
 export namespace ToolSet {
   export type All = Mcp | Skill | Memory | Shell;
@@ -41,7 +43,7 @@ export namespace ToolSet {
   }
 }
 
-export interface LoadedToolset {
+export interface LoadedToolset extends Partial<IDisposable> {
   toolset: Record<string, Tool>;
   instruction?: string;
 }

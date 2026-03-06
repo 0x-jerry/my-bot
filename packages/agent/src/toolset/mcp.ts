@@ -31,5 +31,8 @@ export async function createMCPToolset(
 
   return {
     toolset: await client.tools(),
+    dispose: async () => {
+      await client.close();
+    },
   };
 }

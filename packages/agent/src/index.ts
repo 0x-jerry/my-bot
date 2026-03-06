@@ -1,29 +1,15 @@
-import { serve } from "@hono/node-server";
-import { Hono } from "hono";
 import { loadEnvFile } from "node:process";
+import { setupServer } from "./server";
+import { initGlobalVariables } from "./global";
 
 loadEnvFile();
+start();
 
-const app = new Hono();
+async function start() {
+  // todo, use cli framework to parse args
+  const [confPath] = process.argv.slice(2);
 
-const server = serve(
-  {
-    fetch: app.fetch,
-    port: 8080,
-  },
-  (info) => {
-    console.log(`Server is running at: http://${info.address}:${info.port}`);
-  },
-);
+  await initGlobalVariables({ confPath });
 
-// Graceful shutdown
-process.on("SIGINT", async () => {
-  server.close();
-  process.exit(0);
-});
-
-process.on("SIGTERM", async () => {
-  await Promise.all([new Promise((resolve) => server.close(resolve))]);
-
-  process.exit(0);
-});
+  setupServer();
+}

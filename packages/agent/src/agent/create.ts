@@ -5,16 +5,17 @@ import { loadToolsets } from "../toolset";
 import { LoadedToolset } from "../toolset/types";
 import { readFile } from "node:fs/promises";
 import { nanoid } from "@0x-jerry/utils";
+import { MyAgent } from "./types";
 
 export async function createAgent(
   config: Config.Root,
   agentConfig: Config.AgentConfig,
-) {
+): Promise<MyAgent> {
   const toolsets = await loadToolsets(agentConfig.toolset);
 
   const id = nanoid();
 
-  const agent = new ToolLoopAgent({
+  const instance = new ToolLoopAgent({
     id,
     model: resolveProvider(agentConfig.model, config),
     instructions: await createInstructions(agentConfig, toolsets),
@@ -22,10 +23,16 @@ export async function createAgent(
     stopWhen: [stepCountIs(agentConfig.context?.maxIterations ?? 20)],
   });
 
-  return {
+  const agent: MyAgent = {
+    id,
     config: agentConfig,
-    agent,
+    instance,
+    dispose: async () => {
+      await Promise.all(toolsets.map((toolset) => toolset.dispose?.()));
+    },
   };
+
+  return agent;
 }
 
 async function createInstructions(
