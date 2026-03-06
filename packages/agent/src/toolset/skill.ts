@@ -1,0 +1,94 @@
+import { tool, Tool } from "ai";
+import { z } from "zod";
+import { ToolSet } from "./types";
+import { glob, readdir, readFile } from "node:fs/promises";
+import { homedir } from "node:os";
+import path from "node:path";
+import matter from "gray-matter";
+
+export async function createSkillToolset(
+  config: ToolSet.Skill,
+): Promise<Record<string, Tool>> {
+  const skills = await loadSkills(process.cwd());
+
+  const readSkill = tool({
+    title: "Read Skill",
+    description: "Read a skill",
+    inputSchema: z.object({
+      skill: z.string().describe("The skill to read"),
+    }),
+    execute: async ({ skill }) => {
+      const loadedSkill = skills[skill];
+
+      if (!loadedSkill) {
+        return `Skill ${skill} not found`;
+      }
+
+      return loadedSkill.content;
+    },
+  });
+
+  return {
+    readSkill,
+  };
+}
+
+async function loadSkills(cwd: string) {
+  const home = homedir();
+  const scanFolders = [
+    //
+    `${home}/.codex/skills`,
+    `${home}/.claude/skills`,
+    `${home}/.agents/skills`,
+    `${cwd}/.claude/skills`,
+    `${cwd}/.agents/skills`,
+  ];
+
+  const loadedSkills: Record<string, LoadedSkill> = {};
+
+  for (const folder of scanFolders) {
+    const skills = await loadSkill(folder);
+
+    for (const skill of skills) {
+      loadedSkills[skill.name] = skill;
+    }
+  }
+
+  return loadedSkills;
+}
+
+async function loadSkill(folder: string) {
+  const loadedSkills: LoadedSkill[] = [];
+  const skills = glob(`**/SKILL.md`, { cwd: folder });
+
+  for await (const skill of skills) {
+    const file = path.join(folder, skill);
+    const content = await readFile(file, "utf8");
+
+    const matterResult = matter(content);
+
+    if (!matterResult.data.name) {
+      continue;
+    }
+
+    loadedSkills.push({
+      file,
+      name: matterResult.data.name,
+      description: matterResult.data.description,
+      metadata: matterResult.data.metadata,
+      content: matterResult.content,
+    });
+  }
+
+  return loadedSkills;
+}
+
+interface LoadedSkill {
+  file: string;
+
+  name: string;
+  description?: string;
+  metadata?: Record<string, any>;
+
+  content: string;
+}
