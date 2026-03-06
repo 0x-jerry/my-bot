@@ -1,19 +1,20 @@
 import { Config } from "../config/types";
 import { SystemModelMessage, ToolLoopAgent, ToolSet } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
-import { resolveToolsets } from "../toolset";
+import { loadToolsets } from "../toolset";
 import { LoadedToolset } from "../toolset/types";
+import { readFile } from "node:fs/promises";
 
 export async function createAgent(
   id: string,
   config: Config.Root,
   agentConfig: Config.AgentConfig,
 ) {
-  const toolsets = await resolveToolsets(agentConfig.toolset);
+  const toolsets = await loadToolsets(agentConfig.toolset);
 
   const agent = new ToolLoopAgent({
     model: resolveProvider(agentConfig.model, config),
-    instructions: createInstructions(agentConfig, toolsets),
+    instructions: await createInstructions(agentConfig, toolsets),
     tools: resolveTools(toolsets),
   });
 
@@ -23,16 +24,25 @@ export async function createAgent(
   };
 }
 
-function createInstructions(
+async function createInstructions(
   config: Config.AgentConfig,
   toolsets: LoadedToolset[],
-) {
+): Promise<SystemModelMessage[]> {
   const instructions: SystemModelMessage[] = [];
 
   if (config.instruction) {
     instructions.push({
       role: "system",
       content: config.instruction,
+    });
+  }
+
+  for (const promptFile of config.context?.extraPrompts || []) {
+    const content = await readFile(promptFile, "utf-8");
+    //
+    instructions.push({
+      role: "system",
+      content,
     });
   }
 

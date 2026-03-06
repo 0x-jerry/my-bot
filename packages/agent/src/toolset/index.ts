@@ -8,7 +8,7 @@ import { LoadedToolset } from "./types";
 /**
  * Resolve toolset from config.
  */
-export async function resolveToolsets(
+export async function loadToolsets(
   toolsetsConfig?: Config.ToolsetConfig[],
 ): Promise<LoadedToolset[]> {
   const loadedToolset: LoadedToolset[] = [];
