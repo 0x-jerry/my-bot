@@ -1,0 +1,113 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "Config.AgentConfig": {
+            "properties": {
+                "context": {
+                    "description": "Add extra context to the message.",
+                    "properties": {
+                        "addDate": {
+                            "description": "Add current date to the message.",
+                            "type": "boolean"
+                        },
+                        "extraPrompts": {
+                            "description": "Load extra prompts from files.",
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        "maxHistoryMessages": {
+                            "description": "Max number of messages to keep in history.",
+                            "type": "number"
+                        },
+                        "maxIterations": {
+                            "description": "Max number of tool call iterations.",
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                },
+                "instruction": {
+                    "type": "string"
+                },
+                "model": {
+                    "description": "syntax: providerKey/modelName\neg: openai/gpt-3.5-turbo",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "toolset": {
+                    "items": {
+                        "$ref": "#/definitions/Config.ToolsetConfig"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "Config.AgentConfigs": {
+            "additionalProperties": {
+                "$ref": "#/definitions/Config.AgentConfig"
+            },
+            "type": "object"
+        },
+        "Config.ProviderConfig": {
+            "properties": {
+                "apiKey": {
+                    "type": "string"
+                },
+                "baseUrl": {
+                    "type": "string"
+                },
+                "type": {
+                    "const": "openai",
+                    "description": "Only support openai compatible providers.",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "Config.ProviderConfigs": {
+            "additionalProperties": {
+                "$ref": "#/definitions/Config.ProviderConfig"
+            },
+            "type": "object"
+        },
+        "Config.ToolsetConfig": {
+            "properties": {
+                "type": {
+                    "enum": [
+                        "mcp",
+                        "skill"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "properties": {
+        "agents": {
+            "$ref": "#/definitions/Config.AgentConfigs",
+            "description": "AgentKey => AgentConfig"
+        },
+        "loggingLevel": {
+            "description": "Enable logging.",
+            "enum": [
+                "debug",
+                "error",
+                "info",
+                "warn"
+            ],
+            "type": "string"
+        },
+        "provider": {
+            "$ref": "#/definitions/Config.ProviderConfigs",
+            "description": "ProviderKey => ProviderConfig"
+        }
+    },
+    "type": "object"
+}
+
