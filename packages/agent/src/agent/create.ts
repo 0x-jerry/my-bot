@@ -5,34 +5,37 @@ import { loadToolsets } from "../toolset";
 import { LoadedToolset } from "../toolset/types";
 import { readFile } from "node:fs/promises";
 import { nanoid } from "@0x-jerry/utils";
-import { MyAgent } from "./types";
+import { gv } from "../global";
 
-export async function createAgent(
-  config: Config.Root,
-  agentConfig: Config.AgentConfig,
-): Promise<MyAgent> {
-  const toolsets = await loadToolsets(agentConfig.toolset);
+export class MyAgentImplement {
+  id = nanoid();
+  config: Config.AgentConfig;
 
-  const id = nanoid();
+  instance?: ToolLoopAgent;
 
-  const instance = new ToolLoopAgent({
-    id,
-    model: resolveProvider(agentConfig.model, config),
-    instructions: await createInstructions(agentConfig, toolsets),
-    tools: resolveTools(toolsets),
-    stopWhen: [stepCountIs(agentConfig.context?.maxIterations ?? 20)],
-  });
+  toolsets: LoadedToolset[] = [];
 
-  const agent: MyAgent = {
-    id,
-    config: agentConfig,
-    instance,
-    dispose: async () => {
-      await Promise.all(toolsets.map((toolset) => toolset.dispose?.()));
-    },
-  };
+  constructor(agentConfig: Config.AgentConfig) {
+    this.config = agentConfig;
+  }
 
-  return agent;
+  async init() {
+    const agentConfig = this.config;
+
+    this.toolsets = await loadToolsets(agentConfig.toolset);
+
+    this.instance = new ToolLoopAgent({
+      id: this.id,
+      model: resolveProvider(agentConfig.model, gv.config),
+      instructions: [],
+      tools: resolveTools(this.toolsets),
+      stopWhen: [stepCountIs(agentConfig.context?.maxIterations ?? 20)],
+    });
+  }
+
+  async dispose() {
+    await Promise.all(this.toolsets.map((toolset) => toolset?.dispose?.()));
+  }
 }
 
 async function createInstructions(

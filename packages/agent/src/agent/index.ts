@@ -1,9 +1,8 @@
 import { gv } from "../global";
-import { createAgent } from "./create";
-import { MyAgent } from "./types";
+import { MyAgentImplement } from "./create";
 
 export class AgentManager {
-  agents = new Map<string, MyAgent>();
+  agents = new Map<string, MyAgentImplement>();
 
   async create(agentKey?: string) {
     const agentId = agentKey || Object.keys(gv.config.agents || {})[0];
@@ -13,7 +12,7 @@ export class AgentManager {
       throw new Error(`Agent config not found: ${agentId}`);
     }
 
-    const agent = await createAgent(gv.config, agentConfig);
+    const agent = new MyAgentImplement(agentConfig);
 
     this.agents.set(agent.id, agent);
 
