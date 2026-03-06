@@ -1,3 +1,5 @@
+import { ToolSet } from "../toolset/types";
+
 export namespace Config {
   export interface Root {
     /**
@@ -44,32 +46,32 @@ export namespace Config {
     /**
      * Add extra context to the message.
      */
-    context?: {
-      /**
-       * Load extra prompts from files.
-       */
-      extraPrompts?: string[];
-
-      /**
-       * Add current date to the message.
-       */
-      addDate?: boolean;
-
-      /**
-       * Max number of tool call iterations.
-       */
-      maxIterations?: number;
-
-      /**
-       * Max number of messages to keep in history.
-       */
-      maxHistoryMessages?: number;
-    };
+    context?: AgentContextConfig;
 
     toolset?: ToolsetConfig[];
   }
 
-  export interface ToolsetConfig {
-    type: "mcp" | "skill";
+  export type ToolsetConfig = ToolSet.All;
+
+  export interface AgentContextConfig {
+    /**
+     * Load extra prompts from files.
+     */
+    extraPrompts?: string[];
+
+    /**
+     * Add current date to the message.
+     */
+    addDate?: boolean;
+
+    /**
+     * Max number of tool call iterations.
+     */
+    maxIterations?: number;
+
+    /**
+     * Max number of messages to keep in history.
+     */
+    maxHistoryMessages?: number;
   }
 }

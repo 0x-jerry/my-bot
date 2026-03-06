@@ -1,7 +1,7 @@
 import { Config } from "../config/types";
 import { ToolLoopAgent } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
-import { resolveToolset } from "../toolset";
+import { resolveToolsets } from "../toolset";
 
 export async function createAgent(
   id: string,
@@ -11,7 +11,7 @@ export async function createAgent(
   const agent = new ToolLoopAgent({
     model: resolveProvider(agentConfig.model, config),
     instructions: agentConfig.instruction,
-    tools: await resolveToolset(agentConfig.toolset),
+    tools: await resolveToolsets(agentConfig.toolset),
   });
 
   return {

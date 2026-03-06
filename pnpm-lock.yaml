@@ -29,6 +29,9 @@ importers:
 
   packages/agent:
     dependencies:
+      '@0x-jerry/utils':
+        specifier: ^6.3.0
+        version: 6.3.0
       '@ai-sdk/openai':
         specifier: ^3.0.41
         version: 3.0.41(zod@4.3.6)
@@ -41,6 +44,9 @@ importers:
       confbox:
         specifier: ^0.2.4
         version: 0.2.4
+      got:
+        specifier: ^14.6.6
+        version: 14.6.6
       hono:
         specifier: ^4.12.5
         version: 4.12.5

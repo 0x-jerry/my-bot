@@ -4,29 +4,8 @@
         "Config.AgentConfig": {
             "properties": {
                 "context": {
-                    "description": "Add extra context to the message.",
-                    "properties": {
-                        "addDate": {
-                            "description": "Add current date to the message.",
-                            "type": "boolean"
-                        },
-                        "extraPrompts": {
-                            "description": "Load extra prompts from files.",
-                            "items": {
-                                "type": "string"
-                            },
-                            "type": "array"
-                        },
-                        "maxHistoryMessages": {
-                            "description": "Max number of messages to keep in history.",
-                            "type": "number"
-                        },
-                        "maxIterations": {
-                            "description": "Max number of tool call iterations.",
-                            "type": "number"
-                        }
-                    },
-                    "type": "object"
+                    "$ref": "#/definitions/Config.AgentContextConfig",
+                    "description": "Add extra context to the message."
                 },
                 "instruction": {
                     "type": "string"
@@ -40,7 +19,7 @@
                 },
                 "toolset": {
                     "items": {
-                        "$ref": "#/definitions/Config.ToolsetConfig"
+                        "$ref": "#/definitions/ToolSet.All"
                     },
                     "type": "array"
                 }
@@ -50,6 +29,30 @@
         "Config.AgentConfigs": {
             "additionalProperties": {
                 "$ref": "#/definitions/Config.AgentConfig"
+            },
+            "type": "object"
+        },
+        "Config.AgentContextConfig": {
+            "properties": {
+                "addDate": {
+                    "description": "Add current date to the message.",
+                    "type": "boolean"
+                },
+                "extraPrompts": {
+                    "description": "Load extra prompts from files.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "maxHistoryMessages": {
+                    "description": "Max number of messages to keep in history.",
+                    "type": "number"
+                },
+                "maxIterations": {
+                    "description": "Max number of tool call iterations.",
+                    "type": "number"
+                }
             },
             "type": "object"
         },
@@ -75,13 +78,66 @@
             },
             "type": "object"
         },
-        "Config.ToolsetConfig": {
+        "Record<string,string>": {
+            "type": "object"
+        },
+        "ToolSet.All": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/ToolSet.McpTool"
+                },
+                {
+                    "$ref": "#/definitions/ToolSet.SkillTool"
+                }
+            ]
+        },
+        "ToolSet.McpTool": {
+            "properties": {
+                "args": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "command": {
+                    "type": "string"
+                },
+                "env": {
+                    "$ref": "#/definitions/Record%3Cstring%2Cstring%3E"
+                },
+                "envFile": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "remote": {
+                    "properties": {
+                        "type": {
+                            "enum": [
+                                "http",
+                                "sse"
+                            ],
+                            "type": "string"
+                        },
+                        "url": {
+                            "description": "The URL of the MCP server.",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "type": {
+                    "const": "mcp",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ToolSet.SkillTool": {
             "properties": {
                 "type": {
-                    "enum": [
-                        "mcp",
-                        "skill"
-                    ],
+                    "const": "skill",
                     "type": "string"
                 }
             },

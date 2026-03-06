@@ -11,10 +11,12 @@
   "license": "ISC",
   "packageManager": "pnpm@10.23.0",
   "dependencies": {
+    "@0x-jerry/utils": "^6.3.0",
     "@ai-sdk/openai": "^3.0.41",
     "@hono/node-server": "^1.19.11",
     "ai": "^6.0.116",
     "confbox": "^0.2.4",
+    "got": "^14.6.6",
     "hono": "^4.12.5",
     "zod": "^4.3.6"
   },
