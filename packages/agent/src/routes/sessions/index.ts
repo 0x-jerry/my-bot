@@ -1,17 +1,15 @@
 import { Hono } from "hono";
-import { gv } from "../global";
+import { gv } from "../../global";
 
 export function setupSessionsRoutes(app: Hono) {
-  const api = app.basePath("/sessions");
-
-  api.get("/", async (c) => {
+  app.get("/", async (c) => {
     const sessions = await gv.db.session.findMany({
       orderBy: { createdAt: "desc" },
     });
     return c.json(sessions);
   });
 
-  api.post("/", async (c) => {
+  app.post("/", async (c) => {
     const body = await c.req.json<{ profile?: string }>();
     const profile = body.profile || Object.keys(gv.config.agents || {})[0];
 
@@ -28,7 +26,7 @@ export function setupSessionsRoutes(app: Hono) {
     return c.json(session);
   });
 
-  api.get("/:id", async (c) => {
+  app.get("/:id", async (c) => {
     const id = c.req.param("id");
     const session = await gv.db.session.findUnique({
       where: { id },
@@ -41,7 +39,7 @@ export function setupSessionsRoutes(app: Hono) {
     return c.json(session);
   });
 
-  api.delete("/:id", async (c) => {
+  app.delete("/:id", async (c) => {
     const id = c.req.param("id");
     await gv.db.session.delete({
       where: { id },

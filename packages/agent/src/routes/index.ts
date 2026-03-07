@@ -4,5 +4,5 @@ import { setupSessionsRoutes } from "./sessions";
 export function setupRoutes(app: Hono) {
   const apiApp = app.basePath("/api");
 
-  setupSessionsRoutes(apiApp);
+  setupSessionsRoutes(apiApp.basePath("/sessions"));
 }
