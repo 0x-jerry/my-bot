@@ -27,7 +27,7 @@ export class MyAgentImplement {
     this.instance = new ToolLoopAgent({
       id: this.id,
       model: resolveProvider(agentConfig.model, gv.config),
-      instructions: [],
+      instructions: await createInstructions(agentConfig, this.toolsets),
       tools: resolveTools(this.toolsets),
       stopWhen: [stepCountIs(agentConfig.context?.maxIterations ?? 20)],
     });
