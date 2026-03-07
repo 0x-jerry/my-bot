@@ -4,11 +4,9 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { loadToolsets } from "../toolset";
 import { LoadedToolset } from "../toolset/types";
 import { readFile } from "node:fs/promises";
-import { nanoid } from "@0x-jerry/utils";
 import { gv } from "../global";
 
 export class MyAgentImplement {
-  id = nanoid();
   config: Config.AgentConfig;
 
   instance?: ToolLoopAgent;
@@ -25,7 +23,6 @@ export class MyAgentImplement {
     this.toolsets = await loadToolsets(agentConfig.toolset);
 
     this.instance = new ToolLoopAgent({
-      id: this.id,
       model: resolveProvider(agentConfig.model, gv.config),
       instructions: await createInstructions(agentConfig, this.toolsets),
       tools: resolveTools(this.toolsets),
@@ -40,7 +37,7 @@ export class MyAgentImplement {
 
 async function createInstructions(
   config: Config.AgentConfig,
-  toolsets: LoadedToolset[],
+  toolsets: LoadedToolset[]
 ): Promise<SystemModelMessage[]> {
   const instructions: SystemModelMessage[] = [];
 

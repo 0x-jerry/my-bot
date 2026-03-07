@@ -1,14 +1,13 @@
-import { tool, Tool } from "ai";
+import { tool } from "ai";
 import { LoadedToolset, ToolSet } from "./types";
 import z from "zod";
-import { readFile, writeFile } from "node:fs/promises";
+import { gv } from "../global";
 import { got } from "got";
-import { nanoid } from "@0x-jerry/utils";
 
 export async function createMemoryToolset(
-  config: ToolSet.Memory,
+  config: ToolSet.Memory
 ): Promise<LoadedToolset> {
-  const executor = crateExecutor(config);
+  const executor = createExecutor(config);
 
   const addMemory = tool({
     title: "Add memory",
@@ -26,9 +25,13 @@ export async function createMemoryToolset(
     description: "Search memory from database",
     inputSchema: z.object({
       query: z.string().describe("The query to search memory."),
+      limit: z
+        .number()
+        .describe("The number of recent memories to list.")
+        .default(10),
     }),
     execute: async (input) => {
-      return await executor.search(input.query);
+      return await executor.search(input.query, { limit: input.limit });
     },
   });
 
@@ -59,59 +62,51 @@ export async function createMemoryToolset(
   };
 }
 
-function crateExecutor(config: ToolSet.Memory): MemoryExecutor {
+interface MemoryItem {
+  id: string;
+  createdAt: Date | number;
+  content: string;
+}
+
+interface MemoryExecutor {
+  list: (opt: { limit: number }) => Promise<MemoryItem[]>;
+  add: (memory: string) => Promise<MemoryItem>;
+  search: (keyword: string, opt: { limit: number }) => Promise<MemoryItem[]>;
+}
+
+function createExecutor(config: ToolSet.Memory): MemoryExecutor {
   if (config.remoteUrl) {
     return new RemoteMemoryExecutor(config.remoteUrl);
   }
 
-  const file = config.file || "./memory.json";
-  return new FileMemoryExecutor(file);
+  return new PrismaMemoryExecutor();
 }
 
-class FileMemoryExecutor implements MemoryExecutor {
-  memories: MemoryItem[] = [];
-
-  constructor(private file: string) {
-    this.loadMemories();
-  }
-
+class PrismaMemoryExecutor implements MemoryExecutor {
   async list(opt: { limit: number }): Promise<MemoryItem[]> {
-    return this.memories.slice(-opt.limit);
-  }
-
-  async loadMemories(): Promise<MemoryItem[]> {
-    try {
-      const content = await readFile(this.file, "utf-8");
-      this.memories = JSON.parse(content);
-    } catch (error) {
-      this.memories = [];
-    }
-    return this.memories;
+    return await gv.db.memory.findMany({
+      take: opt.limit,
+      orderBy: { createdAt: "desc" },
+    });
   }
 
   async add(memory: string): Promise<MemoryItem> {
-    const item: MemoryItem = {
-      id: nanoid(),
-      createdAt: Date.now(),
-      memory: memory,
-    };
-
-    this.memories.push(item);
-    await this.saveMemories();
-
-    return item;
+    return await gv.db.memory.create({
+      data: {
+        content: memory,
+      },
+    });
   }
 
-  async search(keyword: string): Promise<MemoryItem[]> {
-    const results = this.memories.filter((item) =>
-      item.memory.includes(keyword),
-    );
-
-    return results;
-  }
-
-  async saveMemories(): Promise<void> {
-    await writeFile(this.file, JSON.stringify(this.memories));
+  async search(query: string, opt: { limit: number }): Promise<MemoryItem[]> {
+    return await gv.db.memory.findMany({
+      where: {
+        content: {
+          contains: query,
+        },
+      },
+      take: opt.limit,
+    });
   }
 }
 
@@ -145,29 +140,18 @@ class RemoteMemoryExecutor implements MemoryExecutor {
     return response;
   }
 
-  async search(keyword: string): Promise<MemoryItem[]> {
+  async search(keyword: string, opt: { limit: number }): Promise<MemoryItem[]> {
     const url = `${this.remoteUrl}/search`;
 
     const response = await got
       .get(url, {
         searchParams: {
           q: keyword,
+          limit: opt.limit,
         },
       })
       .json<MemoryItem[]>();
 
     return response;
   }
-}
-
-interface MemoryItem {
-  id: string;
-  createdAt: number;
-  memory: string;
-}
-
-interface MemoryExecutor {
-  list: (opt: { limit: number }) => Promise<MemoryItem[]>;
-  add: (memory: string) => Promise<MemoryItem>;
-  search: (keyword: string) => Promise<MemoryItem[]>;
 }

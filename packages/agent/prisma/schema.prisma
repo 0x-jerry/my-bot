@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  agentProfile  String
+
+  metadata String?
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessionId String
+  role      String
+  content   String
+  metadata  String?
+}
+
+model Memory {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  content   String
+  metadata  String?
+}

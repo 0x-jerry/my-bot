@@ -44,6 +44,12 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.27.1
         version: 1.27.1(zod@4.3.6)
+      '@prisma/adapter-better-sqlite3':
+        specifier: ^7.4.2
+        version: 7.4.2
+      '@prisma/client':
+        specifier: ^7.4.2
+        version: 7.4.2(prisma@7.4.2(@types/react@19.2.14)(better-sqlite3@12.6.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.5.4))(typescript@5.5.4)
       ai:
         specifier: ^6.0.116
         version: 6.0.116(zod@4.3.6)
@@ -63,6 +69,9 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
     devDependencies:
+      prisma:
+        specifier: ^7.4.2
+        version: 7.4.2(@types/react@19.2.14)(better-sqlite3@12.6.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.5.4)
       typescript-json-schema:
         specifier: ^0.67.1
         version: 0.67.1
@@ -2415,6 +2424,13 @@ snapshots:
 
   '@prisma/client-runtime-utils@7.4.2': {}
 
+  '@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.2.14)(better-sqlite3@12.6.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.5.4))(typescript@5.5.4)':
+    dependencies:
+      '@prisma/client-runtime-utils': 7.4.2
+    optionalDependencies:
+      prisma: 7.4.2(@types/react@19.2.14)(better-sqlite3@12.6.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.5.4)
+      typescript: 5.5.4
+
   '@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.2.14)(better-sqlite3@12.6.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
       '@prisma/client-runtime-utils': 7.4.2
@@ -2434,6 +2450,28 @@ snapshots:
   '@prisma/debug@7.2.0': {}
 
   '@prisma/debug@7.4.2': {}
+
+  '@prisma/dev@0.20.0(typescript@5.5.4)':
+    dependencies:
+      '@electric-sql/pglite': 0.3.15
+      '@electric-sql/pglite-socket': 0.0.20(@electric-sql/pglite@0.3.15)
+      '@electric-sql/pglite-tools': 0.2.20(@electric-sql/pglite@0.3.15)
+      '@hono/node-server': 1.19.9(hono@4.11.4)
+      '@mrleebo/prisma-ast': 0.13.1
+      '@prisma/get-platform': 7.2.0
+      '@prisma/query-plan-executor': 7.2.0
+      foreground-child: 3.3.1
+      get-port-please: 3.2.0
+      hono: 4.11.4
+      http-status-codes: 2.3.0
+      pathe: 2.0.3
+      proper-lockfile: 4.1.2
+      remeda: 2.33.4
+      std-env: 3.10.0
+      valibot: 1.2.0(typescript@5.5.4)
+      zeptomatch: 2.1.0
+    transitivePeerDependencies:
+      - typescript
 
   '@prisma/dev@0.20.0(typescript@5.9.3)':
     dependencies:
@@ -3492,6 +3530,23 @@ snapshots:
       tar-fs: 2.1.4
       tunnel-agent: 0.6.0
 
+  prisma@7.4.2(@types/react@19.2.14)(better-sqlite3@12.6.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.5.4):
+    dependencies:
+      '@prisma/config': 7.4.2
+      '@prisma/dev': 0.20.0(typescript@5.5.4)
+      '@prisma/engines': 7.4.2
+      '@prisma/studio-core': 0.13.1(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      mysql2: 3.15.3
+      postgres: 3.4.7
+    optionalDependencies:
+      better-sqlite3: 12.6.2
+      typescript: 5.5.4
+    transitivePeerDependencies:
+      - '@types/react'
+      - magicast
+      - react
+      - react-dom
+
   prisma@7.4.2(@types/react@19.2.14)(better-sqlite3@12.6.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3):
     dependencies:
       '@prisma/config': 7.4.2
@@ -3944,6 +3999,10 @@ snapshots:
   util-deprecate@1.0.2: {}
 
   v8-compile-cache-lib@3.0.1: {}
+
+  valibot@1.2.0(typescript@5.5.4):
+    optionalDependencies:
+      typescript: 5.5.4
 
   valibot@1.2.0(typescript@5.9.3):
     optionalDependencies:

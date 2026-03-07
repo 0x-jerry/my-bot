@@ -4,7 +4,10 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "g:config-schema": "typescript-json-schema src/config/types.ts Config.Root -o config.schema.json"
+    "g:config-schema": "typescript-json-schema src/config/types.ts Config.Root -o config.schema.json",
+    "db:sync": "prisma db push && prisma generate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +19,8 @@
     "@ai-sdk/openai": "^3.0.41",
     "@hono/node-server": "^1.19.11",
     "@modelcontextprotocol/sdk": "^1.27.1",
+    "@prisma/adapter-better-sqlite3": "^7.4.2",
+    "@prisma/client": "^7.4.2",
     "ai": "^6.0.116",
     "confbox": "^0.2.4",
     "got": "^14.6.6",
@@ -24,6 +29,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "prisma": "^7.4.2",
     "typescript-json-schema": "^0.67.1"
   }
 }
