@@ -66,7 +66,7 @@ export namespace Config {
 
     /**
      * Max number of tool call iterations.
-     * @default 20
+     * @default 100
      */
     maxIterations?: number;
 

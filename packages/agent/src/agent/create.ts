@@ -1,5 +1,11 @@
 import { Config } from "../config/types";
-import { stepCountIs, SystemModelMessage, ToolLoopAgent, ToolSet } from "ai";
+import {
+  ModelMessage,
+  stepCountIs,
+  SystemModelMessage,
+  ToolLoopAgent,
+  ToolSet,
+} from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { loadToolsets } from "../toolset";
 import { LoadedToolset } from "../toolset/types";
@@ -13,11 +19,17 @@ export class MyAgentImplement {
 
   toolsets: LoadedToolset[] = [];
 
+  abortController?: AbortController;
+
   constructor(agentConfig: Config.AgentConfig) {
     this.config = agentConfig;
   }
 
   async init() {
+    if (this.instance) {
+      return;
+    }
+
     const agentConfig = this.config;
 
     this.toolsets = await loadToolsets(agentConfig.toolset);
@@ -26,8 +38,25 @@ export class MyAgentImplement {
       model: resolveProvider(agentConfig.model, gv.config),
       instructions: await createInstructions(agentConfig, this.toolsets),
       tools: resolveTools(this.toolsets),
-      stopWhen: [stepCountIs(agentConfig.context?.maxIterations ?? 20)],
+      stopWhen: [stepCountIs(agentConfig.context?.maxIterations ?? 100)],
     });
+  }
+
+  async runChatLoop(messages: ModelMessage[]) {
+    await this.init();
+
+    if (this.abortController) {
+      this.abortController.abort();
+    }
+
+    this.abortController = new AbortController();
+
+    const output = await this.instance!.generate({
+      abortSignal: this.abortController.signal,
+      messages,
+    });
+
+    return output;
   }
 
   async dispose() {
@@ -37,7 +66,7 @@ export class MyAgentImplement {
 
 async function createInstructions(
   config: Config.AgentConfig,
-  toolsets: LoadedToolset[]
+  toolsets: LoadedToolset[],
 ): Promise<SystemModelMessage[]> {
   const instructions: SystemModelMessage[] = [];
 
@@ -50,7 +79,6 @@ async function createInstructions(
 
   for (const promptFile of config.context?.extraPrompts || []) {
     const content = await readFile(promptFile, "utf-8");
-    //
     instructions.push({
       role: "system",
       content,
