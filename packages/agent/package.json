@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "g:config-schema": "typescript-json-schema src/config/types.ts Config.Root -o config.schema.json",
+    "build": "tsdown src/index.ts",
     "db:sync": "prisma db push && prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev"
