@@ -65,13 +65,13 @@ importers:
       hono:
         specifier: ^4.12.5
         version: 4.12.5
+      prisma:
+        specifier: ^7.4.2
+        version: 7.4.2(@types/react@19.2.14)(better-sqlite3@12.6.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.5.4)
       zod:
         specifier: ^4.3.6
         version: 4.3.6
     devDependencies:
-      prisma:
-        specifier: ^7.4.2
-        version: 7.4.2(@types/react@19.2.14)(better-sqlite3@12.6.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.5.4)
       typescript-json-schema:
         specifier: ^0.67.1
         version: 0.67.1
