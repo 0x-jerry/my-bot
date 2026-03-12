@@ -1,6 +1,6 @@
-import { Arrayable, ensureArray } from "@0x-jerry/utils";
-import { ModelMessage } from "ai";
-import { MessageCreateInput } from "../generated/prisma/models";
+import { type Arrayable, ensureArray } from "@0x-jerry/utils";
+import type { ModelMessage } from "ai";
+import type { MessageCreateInput } from "../generated/prisma/models";
 import { gv } from "../global";
 
 export async function saveModelMessages(
