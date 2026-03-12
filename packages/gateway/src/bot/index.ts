@@ -1,7 +1,7 @@
-import { CagentAdapter } from "@my-bot/cagent";
 import { TelegramAdapter } from "@my-bot/telegram";
 import { Bot } from "./bot";
 import { Hono } from "hono";
+import { MyAgentAdapter } from "@my-bot/adapter-agent";
 
 export interface CreateBotOptions {
   debug?: boolean;
@@ -15,8 +15,9 @@ function createBot(opt: CreateBotOptions = {}) {
     webhook: process.env.TELEGRAM_WEBHOOK,
     debug,
   });
-  const agent = new CagentAdapter({
-    baseUrl: process.env.CAGENT_BASE_URL!,
+
+  const agent = new MyAgentAdapter({
+    baseUrl: process.env.MY_AGENT_BASE_URL!,
     debug,
   });
 

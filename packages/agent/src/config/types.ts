@@ -42,10 +42,12 @@ export namespace Config {
   export interface AgentConfig {
     /**
      * syntax: providerKey/modelName
+     *
      * eg: openai/gpt-3.5-turbo
      */
     model: string;
     name?: string;
+    description?: string;
     instruction?: string;
 
     /**
@@ -115,10 +117,6 @@ export namespace ToolSet {
 
   export interface Memory {
     type: "memory";
-    /**
-     * The path to the memory file.
-     */
-    file?: string;
     /**
      * The URL of the memory server.
      */

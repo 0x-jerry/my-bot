@@ -19,7 +19,7 @@
     "@hono/node-server": "^1.19.9",
     "@modelcontextprotocol/sdk": "^1.27.1",
     "@my-bot/bridge": "workspace:*",
-    "@my-bot/cagent": "workspace:*",
+    "@my-bot/adapter-agent": "workspace:*",
     "@my-bot/spec": "workspace:*",
     "@my-bot/telegram": "workspace:*",
     "@prisma/client": "^7.4.1",

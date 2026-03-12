@@ -1,6 +1,6 @@
-import { CagentAdapter } from "./cagent";
+import { MyAgentAdapter } from "./myagent";
 
-const cagent = new CagentAdapter({
+const cagent = new MyAgentAdapter({
   baseUrl: "http://localhost:9756",
 });
 
@@ -10,8 +10,8 @@ console.log(agents);
 const sessions = await cagent.sessions.list();
 console.log(sessions);
 
-const agentId = agents[0].id;
-const sessionId = sessions[0].id;
+const agentId = agents.at(0)!.id;
+const sessionId = sessions.at(0)!.id;
 
 const data = await cagent.sessions.get(sessionId);
 console.log(data);

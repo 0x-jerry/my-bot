@@ -9,6 +9,14 @@
         "@types/bun": "^1.3.10",
       },
     },
+    "packages/adapter-agent": {
+      "name": "@my-bot/adapter-agent",
+      "version": "1.0.0",
+      "dependencies": {
+        "@my-bot/spec": "workspace:*",
+        "got": "^14.6.6",
+      },
+    },
     "packages/agent": {
       "name": "agent",
       "version": "1.0.0",
@@ -42,14 +50,6 @@
         "@my-bot/spec": "workspace:*",
       },
     },
-    "packages/cagent": {
-      "name": "@my-bot/cagent",
-      "version": "1.0.0",
-      "dependencies": {
-        "@my-bot/spec": "workspace:*",
-        "got": "^14.6.6",
-      },
-    },
     "packages/gateway": {
       "name": "gateway",
       "version": "1.0.0",
@@ -58,8 +58,8 @@
         "@hono/mcp": "^0.2.4",
         "@hono/node-server": "^1.19.9",
         "@modelcontextprotocol/sdk": "^1.27.1",
+        "@my-bot/adapter-agent": "workspace:*",
         "@my-bot/bridge": "workspace:*",
-        "@my-bot/cagent": "workspace:*",
         "@my-bot/spec": "workspace:*",
         "@my-bot/telegram": "workspace:*",
         "@prisma/client": "^7.4.1",
@@ -152,9 +152,9 @@
 
     "@mrleebo/prisma-ast": ["@mrleebo/prisma-ast@0.13.1", "https://registry.npmmirror.com/@mrleebo/prisma-ast/-/prisma-ast-0.13.1.tgz", { "dependencies": { "chevrotain": "10.5.0", "lilconfig": "2.1.0" } }, "sha512-XyroGQXcHrZdvmrGJvsA9KNeOOgGMg1Vg9OlheUsBOSKznLMDl+YChxbkboRHvtFYJEMRYmlV3uoo/njCw05iw=="],
 
-    "@my-bot/bridge": ["@my-bot/bridge@workspace:packages/bridge"],
+    "@my-bot/adapter-agent": ["@my-bot/adapter-agent@workspace:packages/adapter-agent"],
 
-    "@my-bot/cagent": ["@my-bot/cagent@workspace:packages/cagent"],
+    "@my-bot/bridge": ["@my-bot/bridge@workspace:packages/bridge"],
 
     "@my-bot/spec": ["@my-bot/spec@workspace:packages/spec"],
 

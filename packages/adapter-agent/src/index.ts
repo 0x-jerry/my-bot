@@ -1,0 +1,1 @@
+export { MyAgentAdapter } from "./myagent";
