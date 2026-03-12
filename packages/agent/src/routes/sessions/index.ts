@@ -55,6 +55,21 @@ export function setupSessionsRoutes(app: Hono) {
   });
 
   /**
+   * Get all messages for a session by ID
+   */
+  app.get("/:id/messages", async (c) => {
+    const id = c.req.param("id");
+
+    const messages = await gv.db.message.findMany({
+      where: { sessionId: id },
+      orderBy: { createdAt: "asc" },
+    });
+
+    return c.json(messages);
+  });
+
+
+  /**
    * Delete a session by ID
    */
   app.delete("/:id", async (c) => {
