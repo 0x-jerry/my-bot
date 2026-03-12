@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "bun run src/index.ts",
-    "g:config-schema": "typescript-json-schema src/config/types.ts Config.Root -o config.schema.json",
+    "g:config-schema": "typescript-json-schema src/config/types.ts Config.Root -o config.schema.json --skipLibCheck",
     "db:sync": "prisma db push && prisma generate",
     "db:generate": "prisma generate",
     "db:migrate-dev": "prisma migrate dev",

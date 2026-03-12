@@ -50,9 +50,16 @@
                     "type": "number"
                 },
                 "maxIterations": {
+                    "default": 100,
                     "description": "Max number of tool call iterations.",
                     "type": "number"
                 }
+            },
+            "type": "object"
+        },
+        "Config.McpConfigs": {
+            "additionalProperties": {
+                "$ref": "#/definitions/ToolSet.McpConfig"
             },
             "type": "object"
         },
@@ -84,14 +91,20 @@
         "ToolSet.All": {
             "anyOf": [
                 {
-                    "$ref": "#/definitions/ToolSet.McpTool"
+                    "$ref": "#/definitions/ToolSet.Mcp"
                 },
                 {
-                    "$ref": "#/definitions/ToolSet.SkillTool"
+                    "$ref": "#/definitions/ToolSet.Skill"
+                },
+                {
+                    "$ref": "#/definitions/ToolSet.Memory"
+                },
+                {
+                    "$ref": "#/definitions/ToolSet.Shell"
                 }
             ]
         },
-        "ToolSet.McpTool": {
+        "ToolSet.Mcp": {
             "properties": {
                 "args": {
                     "items": {
@@ -111,21 +124,26 @@
                     },
                     "type": "array"
                 },
-                "remote": {
-                    "properties": {
-                        "type": {
-                            "enum": [
-                                "http",
-                                "sse"
-                            ],
-                            "type": "string"
-                        },
-                        "url": {
-                            "description": "The URL of the MCP server.",
-                            "type": "string"
-                        }
+                "filterTools": {
+                    "description": "Filter tools by tool name.",
+                    "items": {
+                        "type": "string"
                     },
-                    "type": "object"
+                    "type": "array"
+                },
+                "name": {
+                    "description": "Root level mcp key",
+                    "type": "string"
+                },
+                "remoteType": {
+                    "enum": [
+                        "http",
+                        "sse"
+                    ],
+                    "type": "string"
+                },
+                "remoteUrl": {
+                    "type": "string"
                 },
                 "type": {
                     "const": "mcp",
@@ -134,7 +152,73 @@
             },
             "type": "object"
         },
-        "ToolSet.SkillTool": {
+        "ToolSet.McpConfig": {
+            "properties": {
+                "args": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "command": {
+                    "type": "string"
+                },
+                "env": {
+                    "$ref": "#/definitions/Record%3Cstring%2Cstring%3E"
+                },
+                "envFile": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "filterTools": {
+                    "description": "Filter tools by tool name.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "remoteType": {
+                    "enum": [
+                        "http",
+                        "sse"
+                    ],
+                    "type": "string"
+                },
+                "remoteUrl": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ToolSet.Memory": {
+            "properties": {
+                "file": {
+                    "description": "The path to the memory file.",
+                    "type": "string"
+                },
+                "remoteUrl": {
+                    "description": "The URL of the memory server.",
+                    "type": "string"
+                },
+                "type": {
+                    "const": "memory",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ToolSet.Shell": {
+            "properties": {
+                "type": {
+                    "const": "shell",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ToolSet.Skill": {
             "properties": {
                 "type": {
                     "const": "skill",
@@ -158,6 +242,9 @@
                 "warn"
             ],
             "type": "string"
+        },
+        "mcps": {
+            "$ref": "#/definitions/Config.McpConfigs"
         },
         "provider": {
             "$ref": "#/definitions/Config.ProviderConfigs",
