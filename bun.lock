@@ -17,6 +17,20 @@
         "got": "^14.6.6",
       },
     },
+    "packages/adapter-telegram": {
+      "name": "@my-bot/adapter-telegram",
+      "version": "1.0.0",
+      "dependencies": {
+        "@0x-jerry/utils": "^6.3.0",
+        "@my-bot/spec": "workspace:*",
+        "global-agent": "^3.0.0",
+        "gramio": "^0.6.0",
+        "undici": "^7.22.0",
+      },
+      "devDependencies": {
+        "@types/global-agent": "^3.0.0",
+      },
+    },
     "packages/agent": {
       "name": "agent",
       "version": "1.0.0",
@@ -59,9 +73,9 @@
         "@hono/node-server": "^1.19.9",
         "@modelcontextprotocol/sdk": "^1.27.1",
         "@my-bot/adapter-agent": "workspace:*",
+        "@my-bot/adapter-telegram": "workspace:*",
         "@my-bot/bridge": "workspace:*",
         "@my-bot/spec": "workspace:*",
-        "@my-bot/telegram": "workspace:*",
         "@prisma/client": "^7.4.1",
         "dayjs": "^1.11.19",
         "hono": "^4.12.5",
@@ -73,20 +87,6 @@
     "packages/spec": {
       "name": "@my-bot/spec",
       "version": "0.0.1",
-    },
-    "packages/telegram": {
-      "name": "@my-bot/telegram",
-      "version": "1.0.0",
-      "dependencies": {
-        "@0x-jerry/utils": "^6.3.0",
-        "@my-bot/spec": "workspace:*",
-        "global-agent": "^3.0.0",
-        "gramio": "^0.6.0",
-        "undici": "^7.22.0",
-      },
-      "devDependencies": {
-        "@types/global-agent": "^3.0.0",
-      },
     },
   },
   "packages": {
@@ -154,11 +154,11 @@
 
     "@my-bot/adapter-agent": ["@my-bot/adapter-agent@workspace:packages/adapter-agent"],
 
+    "@my-bot/adapter-telegram": ["@my-bot/adapter-telegram@workspace:packages/adapter-telegram"],
+
     "@my-bot/bridge": ["@my-bot/bridge@workspace:packages/bridge"],
 
     "@my-bot/spec": ["@my-bot/spec@workspace:packages/spec"],
-
-    "@my-bot/telegram": ["@my-bot/telegram@workspace:packages/telegram"],
 
     "@opentelemetry/api": ["@opentelemetry/api@1.9.0", "https://registry.npmmirror.com/@opentelemetry/api/-/api-1.9.0.tgz", {}, "sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg=="],
 

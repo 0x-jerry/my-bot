@@ -21,7 +21,7 @@
     "@my-bot/bridge": "workspace:*",
     "@my-bot/adapter-agent": "workspace:*",
     "@my-bot/spec": "workspace:*",
-    "@my-bot/telegram": "workspace:*",
+    "@my-bot/adapter-telegram": "workspace:*",
     "@prisma/client": "^7.4.1",
     "dayjs": "^1.11.19",
     "hono": "^4.12.5",

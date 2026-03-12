@@ -1,4 +1,4 @@
-import { TelegramAdapter } from "@my-bot/telegram";
+import { TelegramAdapter } from "@my-bot/adapter-telegram";
 import { Bot } from "./bot";
 import { Hono } from "hono";
 import { MyAgentAdapter } from "@my-bot/adapter-agent";
