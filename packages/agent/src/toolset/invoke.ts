@@ -1,6 +1,7 @@
 import { tool } from "ai";
 import type { LoadedToolset, ToolSet } from "./types";
 import z from "zod";
+import { gv } from "../global";
 
 export async function createInvokeToolset(
   config: ToolSet.Invoke,
@@ -12,13 +13,16 @@ export async function createInvokeToolset(
       cron: z.string().describe("The cron expression to schedule the rule"),
       reason: z.string().describe("The reason why you want to invoke yourself"),
     }),
-    execute: async ({ cron, reason: why }) => {
-      // TODO: Add the rule to the database
+    execute: async ({ cron, reason }) => {
+      const cronJob = await gv.db.seesionCronJob.create({
+        data: {
+          sessionId,
+          cron,
+          reason,
+        },
+      });
 
-      return {
-        cron,
-        why,
-      };
+      return `Cron job ${cronJob.id} added`;
     },
   });
 
@@ -26,10 +30,19 @@ export async function createInvokeToolset(
     description: "List all the rules you have added",
     inputSchema: z.object({}),
     execute: async () => {
-      // TODO: List all the rules from the database
+      const cronJobs = await gv.db.seesionCronJob.findMany({
+        where: {
+          sessionId,
+        },
+      });
 
       return {
-        rules: [],
+        rules: cronJobs.map((job) => ({
+          id: job.id,
+          createdAt: job.createdAt,
+          cron: job.cron,
+          reason: job.reason,
+        })),
       };
     },
   });
@@ -40,11 +53,13 @@ export async function createInvokeToolset(
       id: z.string().describe("The ID of the rule to delete"),
     }),
     execute: async ({ id }) => {
-      // TODO: Delete the rule from the database
+      await gv.db.seesionCronJob.delete({
+        where: {
+          id,
+        },
+      });
 
-      return {
-        id,
-      };
+      return `Cron job ${id} deleted`;
     },
   });
 

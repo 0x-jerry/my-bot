@@ -4,7 +4,7 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
-  runtime = "bun"
+  runtime  = "bun"
 }
 
 datasource db {
@@ -36,4 +36,14 @@ model Memory {
   createdAt DateTime @default(now())
   content   String
   metadata  String?
+}
+
+model SeesionCronJob {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  sessionId String
+
+  cron   String
+  reason String
 }

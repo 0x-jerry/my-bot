@@ -3,11 +3,13 @@ import { loadConfig } from "./config/load";
 import type { Config } from "./config/types";
 import type { PrismaClient } from "./generated/prisma/client";
 import { getDatabaseClient } from "./database";
+import { SessionCronJobManager } from "./sessions/cron";
 
 export interface GlobalVariables {
   agentManager: AgentManager;
   config: Config.Root;
   db: PrismaClient;
+  sessionCronJobs: SessionCronJobManager;
 }
 
 let initialized = false;
@@ -31,6 +33,7 @@ export async function initGlobalVariables(
   gv.db = getDatabaseClient();
 
   gv.agentManager = new AgentManager();
+  gv.sessionCronJobs = new SessionCronJobManager();
 
   return gv;
 }
