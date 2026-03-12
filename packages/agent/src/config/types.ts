@@ -66,6 +66,8 @@ export namespace Config {
 
     /**
      * Add current date to the message.
+     *
+     * Every 1 hour, add the current datetime to the message.
      */
     addDate?: boolean;
 
@@ -74,11 +76,6 @@ export namespace Config {
      * @default 100
      */
     maxIterations?: number;
-
-    /**
-     * Max number of messages to keep in history.
-     */
-    maxHistoryMessages?: number;
   }
 }
 

@@ -35,7 +35,7 @@
         "Config.AgentContextConfig": {
             "properties": {
                 "addDate": {
-                    "description": "Add current date to the message.",
+                    "description": "Add current date to the message.\n\nEvery 1 hour, add the current datetime to the message.",
                     "type": "boolean"
                 },
                 "extraPrompts": {
@@ -44,10 +44,6 @@
                         "type": "string"
                     },
                     "type": "array"
-                },
-                "maxHistoryMessages": {
-                    "description": "Max number of messages to keep in history.",
-                    "type": "number"
                 },
                 "maxIterations": {
                     "default": 100,

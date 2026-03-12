@@ -9,7 +9,6 @@ agents:
     instruction: You are a helpful assistant!
     context:
       maxIterations: 100
-      maxHistoryMessages: 1000
       addDate: true
     toolset:
       - type: mcp
