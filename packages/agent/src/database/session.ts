@@ -7,7 +7,7 @@ export async function saveModelMessages(
   messages: Arrayable<ModelMessage>,
   sessionId: string,
 ) {
-  const dbMesasges = ensureArray(messages).map((message) => {
+  const dbMessages = ensureArray(messages).map((message) => {
     const msg: MessageCreateInput = {
       sessionId,
       role: message.role,
@@ -19,6 +19,6 @@ export async function saveModelMessages(
   });
 
   await gv.db.message.createMany({
-    data: dbMesasges,
+    data: dbMessages,
   });
 }
