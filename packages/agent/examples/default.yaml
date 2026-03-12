@@ -1,0 +1,24 @@
+provider:
+  dashscope:
+    type: openai
+    baseUrl: https://dashscope.aliyuncs.com/compatible-mode/v1
+
+agents:
+  root:
+    model: dashscope/qwen3.5-35b-a3b
+    instruction: You are a helpful assistant!
+    context:
+      maxIterations: 100
+      maxHistoryMessages: 1000
+      addDate: true
+    toolset:
+      - type: mcp
+        name: web-search
+      - type: memory
+      - type: skill
+      - type: shell
+
+mcps:
+  web-search:
+    remoteType: sse
+    remoteUrl: http://search-mcp:3000/sse

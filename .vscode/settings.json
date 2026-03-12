@@ -1,2 +1,7 @@
 {
+  "yaml.schemas": {
+    "packages/agent/config.schema.json": [
+      "packages/agent/examples/*.yaml"
+    ]
+  }
 }
