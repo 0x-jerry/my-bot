@@ -2,6 +2,9 @@ import { Hono } from "hono";
 import { gv } from "../../global";
 import type { ModelMessage } from "ai";
 import { saveModelMessages } from "../../database/session";
+import type { Config } from "../../config/types";
+import dayjs from "dayjs";
+import type { MessageModel } from "../../generated/prisma/models";
 
 export function setupSessionsRoutes(app: Hono) {
   /**
@@ -19,7 +22,8 @@ export function setupSessionsRoutes(app: Hono) {
    */
   app.post("/", async (c) => {
     const body = await c.req.json<{ profile?: string }>();
-    const profile = body.profile || Object.keys(gv.config.agents || {}).at(0) || '';
+    const profile =
+      body.profile || Object.keys(gv.config.agents || {}).at(0) || "";
 
     if (!gv.config.agents?.[profile]) {
       return c.json({ error: "Invalid agent profile" }, 400);
@@ -76,6 +80,8 @@ export function setupSessionsRoutes(app: Hono) {
 
     const body = await c.req.json<{ message?: string }>();
 
+    const agent = await gv.agentManager.getOrCreate(session.agentProfile);
+
     const history = await gv.db.message.findMany({
       where: { sessionId },
       orderBy: { createdAt: "asc" },
@@ -85,6 +91,13 @@ export function setupSessionsRoutes(app: Hono) {
       return JSON.parse(message.raw);
     });
 
+    const extraMessages = createExtraInformation(agent.config, history);
+
+    if (extraMessages.length) {
+      messages.push(...extraMessages);
+      await saveModelMessages(extraMessages, sessionId);
+    }
+
     if (body.message) {
       const userMessage: ModelMessage = { role: "user", content: body.message };
 
@@ -93,7 +106,6 @@ export function setupSessionsRoutes(app: Hono) {
       await saveModelMessages(userMessage, sessionId);
     }
 
-    const agent = await gv.agentManager.getOrCreate(session.agentProfile);
     const output = await agent.runChatLoop(messages);
 
     await saveModelMessages(output.response.messages, sessionId);
@@ -103,4 +115,35 @@ export function setupSessionsRoutes(app: Hono) {
       reasoningText: output.reasoningText,
     });
   });
+}
+
+function createExtraInformation(
+  config: Config.AgentConfig,
+  history: MessageModel[],
+): ModelMessage[] {
+  const msgs: ModelMessage[] = [];
+
+  if (config.context?.addDate) {
+    const now = dayjs();
+
+    const lastMessageDate = history.at(-1)?.createdAt;
+
+    if (!lastMessageDate) {
+      msgs.push({
+        role: "system",
+        content: `Current datetime: ${now.toString()}`,
+      });
+    } else {
+      // Add datetime every 1 hours
+
+      if (dayjs(lastMessageDate).add(1, "hour").isBefore(now)) {
+        msgs.push({
+          role: "system",
+          content: `Current datetime: ${now.toString()}`,
+        });
+      }
+    }
+  }
+
+  return msgs;
 }
