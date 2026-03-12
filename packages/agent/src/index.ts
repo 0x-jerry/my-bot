@@ -1,8 +1,7 @@
-import { loadEnvFile } from "node:process";
+import 'dotenv/config'
 import { setupServer } from "./server";
 import { initGlobalVariables } from "./global";
 
-loadEnvFile();
 start();
 
 async function start() {
