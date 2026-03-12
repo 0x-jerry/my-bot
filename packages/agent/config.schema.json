@@ -71,8 +71,11 @@
                 "baseUrl": {
                     "type": "string"
                 },
+                "name": {
+                    "type": "string"
+                },
                 "type": {
-                    "const": "openai",
+                    "const": "openai-compatible",
                     "description": "Only support openai compatible providers.",
                     "type": "string"
                 }

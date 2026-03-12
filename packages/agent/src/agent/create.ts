@@ -6,7 +6,7 @@ import {
   ToolLoopAgent,
   type ToolSet,
 } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { loadToolsets } from "../toolset";
 import type { LoadedToolset } from "../toolset/types";
 import { readFile } from "node:fs/promises";
@@ -114,12 +114,15 @@ function resolveProvider(model: string, config: Config.Root) {
     const providerConfig = config.provider?.[provider];
 
     if (providerConfig) {
-      const openai = createOpenAI({
-        baseURL: providerConfig.baseUrl,
-        apiKey: providerConfig.apiKey,
-      });
+      if (providerConfig.type === "openai-compatible") {
+        const openai = createOpenAICompatible({
+          name: providerConfig.name ?? provider,
+          baseURL: providerConfig.baseUrl,
+          apiKey: providerConfig.apiKey ?? process.env.OPENAI_API_KEY,
+        });
 
-      return openai(modelName);
+        return openai(modelName);
+      }
     }
   }
 

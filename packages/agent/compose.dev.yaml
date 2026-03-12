@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # env_file:
-    #   - .env
+    env_file:
+      - .compose-dev.env
     volumes:
       - ./examples/default.yaml:/app/agent.yaml:ro
       - ./data:/data

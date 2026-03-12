@@ -33,9 +33,10 @@ export namespace Config {
     /**
      * Only support openai compatible providers.
      */
-    type?: "openai";
+    type: "openai-compatible";
+    name?: string;
     apiKey?: string;
-    baseUrl?: string;
+    baseUrl: string;
   }
 
   export interface AgentConfig {
