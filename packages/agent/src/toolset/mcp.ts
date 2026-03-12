@@ -2,6 +2,7 @@ import type { LoadedToolset, ToolSet } from "./types";
 import { createMCPClient } from "@ai-sdk/mcp";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { gv } from "../global";
+import type { Tool } from "ai";
 
 export async function createMCPToolset(
   config: ToolSet.Mcp,
@@ -38,10 +39,24 @@ export async function createMCPToolset(
     transport,
   });
 
+  const toolset = await client.tools();
+
+  const filteredToolset = filterToolset(toolset, config.filterTools);
+
   return {
-    toolset: await client.tools(),
+    toolset: filteredToolset,
     dispose: async () => {
       await client.close();
     },
   };
+}
+
+function filterToolset(toolset: Record<string, Tool>, includes?: string[]) {
+  if (!includes?.length) {
+    return toolset;
+  }
+
+  const tools = includes.map((key) => [key, toolset[key]]);
+
+  return Object.fromEntries(tools);
 }
