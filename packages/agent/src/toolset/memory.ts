@@ -1,5 +1,5 @@
 import { tool } from "ai";
-import { LoadedToolset, ToolSet } from "./types";
+import type { LoadedToolset, ToolSet } from "./types";
 import z from "zod";
 import { gv } from "../global";
 import { got } from "got";

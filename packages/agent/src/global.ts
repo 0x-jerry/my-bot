@@ -1,6 +1,6 @@
 import { AgentManager } from "./agent";
 import { loadConfig } from "./config/load";
-import { Config } from "./config/types";
+import type { Config } from "./config/types";
 import type { PrismaClient } from "./generated/prisma/client";
 import { getDatabaseClient } from "./database";
 

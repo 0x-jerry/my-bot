@@ -1,6 +1,6 @@
 import { parseJSONC, parseYAML } from "confbox";
 import { readFile } from "node:fs/promises";
-import { Config } from "./types";
+import type { Config } from "./types";
 import { fromJSONSchema } from "zod";
 import configSchema from "../../config.schema.json";
 import { JSONSchema } from "zod/v4/core";
@@ -37,7 +37,7 @@ async function validateConfig(config: any): Promise<Config.Root> {
   const conf = schema.parse(config) as Config.Root;
 
   for (const agentConfig in conf.agents) {
-    const agent = conf.agents[agentConfig];
+    const agent = conf.agents[agentConfig]!;
     validateAgentConfig(agent);
   }
 

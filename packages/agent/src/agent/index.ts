@@ -9,6 +9,10 @@ export class AgentManager {
       profile = Object.keys(gv.config.agents || {})[0];
     }
 
+    if (!profile) {
+      throw new Error(`No agent config!`)
+    }
+
     const agentConfig = gv.config.agents?.[profile];
 
     if (!agentConfig) {
@@ -26,6 +30,11 @@ export class AgentManager {
     if (!profile) {
       profile = Object.keys(gv.config.agents || {})[0];
     }
+
+    if (!profile) {
+      throw new Error(`No agent config!`)
+    }
+
 
     const agent = this.agents.get(profile);
 

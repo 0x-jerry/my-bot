@@ -1,14 +1,14 @@
-import { Config } from "../config/types";
+import type { Config } from "../config/types";
 import {
-  ModelMessage,
+  type ModelMessage,
   stepCountIs,
-  SystemModelMessage,
+  type SystemModelMessage,
   ToolLoopAgent,
-  ToolSet,
+  type ToolSet,
 } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { loadToolsets } from "../toolset";
-import { LoadedToolset } from "../toolset/types";
+import type { LoadedToolset } from "../toolset/types";
 import { readFile } from "node:fs/promises";
 import { gv } from "../global";
 
@@ -110,15 +110,17 @@ function resolveTools(toolsets: LoadedToolset[]) {
 function resolveProvider(model: string, config: Config.Root) {
   const [provider, modelName] = model.split("/");
 
-  const providerConfig = config.provider?.[provider];
+  if (provider && modelName) {
+    const providerConfig = config.provider?.[provider];
 
-  if (providerConfig) {
-    const openai = createOpenAI({
-      baseURL: providerConfig.baseUrl,
-      apiKey: providerConfig.apiKey,
-    });
+    if (providerConfig) {
+      const openai = createOpenAI({
+        baseURL: providerConfig.baseUrl,
+        apiKey: providerConfig.apiKey,
+      });
 
-    return openai(modelName);
+      return openai(modelName);
+    }
   }
 
   return model;

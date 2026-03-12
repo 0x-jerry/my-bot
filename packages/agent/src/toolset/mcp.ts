@@ -1,21 +1,30 @@
-import { Tool } from "ai";
-import { LoadedToolset, ToolSet } from "./types";
+import type { LoadedToolset, ToolSet } from "./types";
 import { createMCPClient } from "@ai-sdk/mcp";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { gv } from "../global";
 
 export async function createMCPToolset(
   config: ToolSet.Mcp,
 ): Promise<LoadedToolset> {
-  const transport = config.command
+  let mcpConfig: ToolSet.McpConfig = config;
+
+  if (config.name) {
+    const topLevelConf = gv.config.mcps?.[config.name];
+    if (topLevelConf) {
+      mcpConfig = topLevelConf;
+    }
+  }
+
+  const transport = mcpConfig.command
     ? new StdioClientTransport({
-        command: config.command,
-        args: config.args,
-        env: config.env,
+        command: mcpConfig.command,
+        args: mcpConfig.args,
+        env: mcpConfig.env,
       })
-    : config.remoteUrl
+    : mcpConfig.remoteUrl
       ? {
-          type: config.remoteType ?? "http",
-          url: config.remoteUrl,
+          type: mcpConfig.remoteType ?? "http",
+          url: mcpConfig.remoteUrl,
         }
       : undefined;
 

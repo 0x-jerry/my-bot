@@ -1,13 +1,13 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { LoadedToolset, ToolSet } from "./types";
+import type { LoadedToolset, ToolSet } from "./types";
 import { glob, readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import path from "node:path";
 import matter from "gray-matter";
 
 export async function createSkillToolset(
-  config: ToolSet.Skill,
+  _config: ToolSet.Skill,
 ): Promise<LoadedToolset> {
   const skills = await loadSkills(process.cwd());
 

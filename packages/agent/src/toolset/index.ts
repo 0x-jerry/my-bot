@@ -1,9 +1,9 @@
-import { Config } from "../config/types";
+import type { Config } from "../config/types";
 import { createMemoryToolset } from "./memory";
 import { createMCPToolset } from "./mcp";
 import { createShellToolset } from "./shell";
 import { createSkillToolset } from "./skill";
-import { LoadedToolset } from "./types";
+import type { LoadedToolset } from "./types";
 
 /**
  * Resolve toolset from config.

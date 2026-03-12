@@ -1,4 +1,4 @@
-import { ToolSet } from "../toolset/types";
+import type { ToolSet } from "../toolset/types";
 
 export namespace Config {
   export interface Root {
@@ -15,6 +15,12 @@ export namespace Config {
      * AgentKey => AgentConfig
      */
     agents?: AgentConfigs;
+
+    mcps?: McpConfigs;
+  }
+
+  export interface McpConfigs {
+    [mcpKey: string]: ToolSet.McpConfig;
   }
 
   export interface ProviderConfigs {

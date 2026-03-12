@@ -1,13 +1,19 @@
-import { Awaitable } from "@0x-jerry/utils";
-import { Tool } from "ai";
-import { IDisposable } from "../types";
+import type { Tool } from "ai";
+import type { IDisposable } from "../types";
 
 export namespace ToolSet {
   export type All = Mcp | Skill | Memory | Shell;
 
-  export interface Mcp {
+  export interface Mcp extends McpConfig {
     type: "mcp";
 
+    /**
+     * Root level mcp key
+     */
+    name?: string
+  }
+
+  export interface McpConfig {
     command?: string;
     args?: string[];
     env?: Record<string, string>;
@@ -21,7 +27,6 @@ export namespace ToolSet {
      */
     filterTools?: string[];
   }
-
   export interface Skill {
     type: "skill";
   }
