@@ -1,9 +1,16 @@
 FROM oven/bun:1-debian
 
-WORKDIR /app
+RUN bun i prisma -g --registry https://registry.npmmirror.com/
 
-COPY dist /app/
+COPY dist prisma.config.ts entrypoint.sh /app/
+COPY prisma/ /app/prisma
 
-ENV DATABASE_URL="file:./prod.db"
+ENV DATABASE_URL="file:/data/prod.db"
 
-ENTRYPOINT [ "bun", "run", "/app/index.js" ]
+EXPOSE 8080
+
+VOLUME [ "/data" ]
+
+WORKDIR /workspace
+
+ENTRYPOINT [ "sh", "/app/entrypoint.sh" ]

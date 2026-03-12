@@ -85,9 +85,6 @@
             },
             "type": "object"
         },
-        "Record<string,string>": {
-            "type": "object"
-        },
         "ToolSet.All": {
             "anyOf": [
                 {
@@ -104,6 +101,12 @@
                 }
             ]
         },
+        "ToolSet.EnvConfig": {
+            "additionalProperties": {
+                "type": "string"
+            },
+            "type": "object"
+        },
         "ToolSet.Mcp": {
             "properties": {
                 "args": {
@@ -116,7 +119,7 @@
                     "type": "string"
                 },
                 "env": {
-                    "$ref": "#/definitions/Record%3Cstring%2Cstring%3E"
+                    "$ref": "#/definitions/ToolSet.EnvConfig"
                 },
                 "envFile": {
                     "items": {
@@ -164,7 +167,7 @@
                     "type": "string"
                 },
                 "env": {
-                    "$ref": "#/definitions/Record%3Cstring%2Cstring%3E"
+                    "$ref": "#/definitions/ToolSet.EnvConfig"
                 },
                 "envFile": {
                     "items": {

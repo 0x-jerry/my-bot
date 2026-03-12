@@ -93,10 +93,14 @@ export namespace ToolSet {
     name?: string;
   }
 
+  export interface EnvConfig {
+    [key: string]: string;
+  }
+
   export interface McpConfig {
     command?: string;
     args?: string[];
-    env?: Record<string, string>;
+    env?: EnvConfig;
     envFile?: string[];
 
     remoteUrl?: string;
