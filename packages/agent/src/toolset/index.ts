@@ -20,7 +20,7 @@ export async function loadToolsets(
       const toolset = await loadToolset(toolsetConfig);
       loadedToolset.push(toolset);
     } catch (error) {
-      console.error(`Failed to load toolset ${toolsetConfig.type}`, error);
+      console.error("Failed to load toolset", toolsetConfig, error);
     }
   }
 

@@ -5,6 +5,7 @@ import { glob, readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import path from "node:path";
 import matter from "gray-matter";
+import { existsSync } from "node:fs";
 
 export async function createSkillToolset(
   _config: ToolSet.Skill,
@@ -76,6 +77,11 @@ async function loadSkills(cwd: string) {
 
 async function loadSkill(folder: string) {
   const loadedSkills: LoadedSkill[] = [];
+
+  if (!existsSync(folder)) {
+    return loadedSkills;
+  }
+
   const skills = glob(`**/SKILL.md`, { cwd: folder });
 
   for await (const skill of skills) {
