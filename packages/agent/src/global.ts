@@ -1,8 +1,8 @@
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { AgentManager } from "./agent";
 import { loadConfig } from "./config/load";
 import { Config } from "./config/types";
-import { PrismaClient } from "./generated/prisma/client";
+import type { PrismaClient } from "./generated/prisma/client";
+import { getDatabaseClient } from "./database";
 
 export interface GlobalVariables {
   agentManager: AgentManager;
@@ -20,7 +20,7 @@ export interface InitGlobalVariablesOptions {
 }
 
 export async function initGlobalVariables(
-  options: InitGlobalVariablesOptions
+  options: InitGlobalVariablesOptions,
 ): Promise<GlobalVariables> {
   if (initialized) {
     return gv;
@@ -28,11 +28,7 @@ export async function initGlobalVariables(
 
   initialized = true;
   gv.config = await loadConfig(options.confPath);
-  gv.db = new PrismaClient({
-    adapter: new PrismaBetterSqlite3({
-      url: process.env.DATABASE_URL,
-    }),
-  });
+  gv.db = getDatabaseClient();
 
   gv.agentManager = new AgentManager();
 

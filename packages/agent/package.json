@@ -4,9 +4,8 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "start": "tsx src/index.ts",
+    "start": "bun run src/index.ts",
     "g:config-schema": "typescript-json-schema src/config/types.ts Config.Root -o config.schema.json",
-    "build": "tsdown src/index.ts",
     "db:sync": "prisma db push && prisma generate",
     "db:generate": "prisma generate",
     "db:migrate-dev": "prisma migrate dev",
@@ -22,7 +21,6 @@
     "@ai-sdk/openai": "^3.0.41",
     "@hono/node-server": "^1.19.11",
     "@modelcontextprotocol/sdk": "^1.27.1",
-    "@prisma/adapter-better-sqlite3": "^7.4.2",
     "@prisma/client": "^7.4.2",
     "ai": "^6.0.116",
     "confbox": "^0.2.4",
@@ -30,6 +28,7 @@
     "gray-matter": "^4.0.3",
     "hono": "^4.12.5",
     "prisma": "^7.4.2",
+    "prisma-adapter-bun-sqlite": "^0.7.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

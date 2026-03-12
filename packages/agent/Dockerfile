@@ -1,13 +1,13 @@
-FROM node:lts-trixie-slim as base
+FROM oven/bun:1-debian
 
 WORKDIR /app
 
-COPY prisma src package.json  prisma.config.ts tsconfig.json /app/
+COPY .npmrc prisma src package.json  prisma.config.ts tsconfig.json /app/
 
 ENV DATABASE_URL="file:./prod.db"
 
-RUN pnpm i --prod
+RUN npm i --omit dev
 
-RUN pnpm run db:migrate && pnpm run db:generate
+RUN npm run db:migrate && npm run db:generate
 
-ENTRYPOINT [ "pnpm", "run", "start" ]
+ENTRYPOINT [ "npm", "run", "start" ]

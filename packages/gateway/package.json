@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx src/index.ts",
+    "dev": "bun run src/index.ts",
     "db:sync": "prisma db push && prisma generate",
     "db:gen": "prisma generate"
   },
@@ -22,12 +22,11 @@
     "@my-bot/cagent": "workspace:*",
     "@my-bot/spec": "workspace:*",
     "@my-bot/telegram": "workspace:*",
-    "@prisma/adapter-better-sqlite3": "^7.4.1",
     "@prisma/client": "^7.4.1",
-    "better-sqlite3": "^12.6.2",
     "dayjs": "^1.11.19",
     "hono": "^4.12.5",
     "prisma": "^7.4.2",
+    "prisma-adapter-bun-sqlite": "^0.7.0",
     "zod": "^4.3.6"
   }
 }
