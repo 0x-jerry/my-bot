@@ -4,11 +4,12 @@ import { createMCPToolset } from "./mcp";
 import { createShellToolset } from "./shell";
 import { createSkillToolset } from "./skill";
 import type { LoadedToolset } from "./types";
+import { createInvokeToolset } from "./invoke";
 
 /**
  * Resolve toolset from config.
  */
-export async function loadToolsets(
+export async function loadStaticToolsets(
   toolsetsConfig?: Config.ToolsetConfig[],
 ): Promise<LoadedToolset[]> {
   const loadedToolset: LoadedToolset[] = [];
@@ -17,7 +18,9 @@ export async function loadToolsets(
 
   for (const toolsetConfig of toolsetsConfig) {
     try {
-      const toolset = await loadToolset(toolsetConfig);
+      const toolset = await loadSaticToolset(toolsetConfig);
+      if (!toolset) continue;
+
       loadedToolset.push(toolset);
     } catch (error) {
       console.error("Failed to load toolset", toolsetConfig, error);
@@ -27,7 +30,43 @@ export async function loadToolsets(
   return loadedToolset;
 }
 
-async function loadToolset(tool: Config.ToolsetConfig): Promise<LoadedToolset> {
+export async function loadDynamicToolsets(
+  sessionId: string,
+  toolsetsConfig?: Config.ToolsetConfig[],
+): Promise<LoadedToolset[]> {
+  const loadedToolset: LoadedToolset[] = [];
+
+  if (!toolsetsConfig?.length) return loadedToolset;
+
+  for (const toolsetConfig of toolsetsConfig) {
+    try {
+      const toolset = await loadDynamictoolset(toolsetConfig, sessionId);
+      if (!toolset) continue;
+
+      loadedToolset.push(toolset);
+    } catch (error) {
+      console.error("Failed to load toolset", toolsetConfig, error);
+    }
+  }
+
+  return loadedToolset;
+}
+
+async function loadDynamictoolset(
+  tool: Config.ToolsetConfig,
+  sessionId: string,
+): Promise<LoadedToolset | null> {
+  switch (tool.type) {
+    case "invoke":
+      return await createInvokeToolset(tool, sessionId);
+    default:
+      return null;
+  }
+}
+
+async function loadSaticToolset(
+  tool: Config.ToolsetConfig,
+): Promise<LoadedToolset | null> {
   switch (tool.type) {
     case "memory":
       return await createMemoryToolset(tool);
@@ -38,8 +77,6 @@ async function loadToolset(tool: Config.ToolsetConfig): Promise<LoadedToolset> {
     case "skill":
       return await createSkillToolset(tool);
     default:
-      return {
-        toolset: {},
-      };
+      return null;
   }
 }

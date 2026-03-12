@@ -132,7 +132,7 @@ class MyAgentMessageAdapter implements Agent.MessagesAdapter {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify([{ role: "user", content: message }]),
     });
 
     if (!response.body) {

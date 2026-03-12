@@ -68,7 +68,6 @@ export function setupSessionsRoutes(app: Hono) {
     return c.json(messages);
   });
 
-
   /**
    * Delete a session by ID
    */
@@ -93,7 +92,7 @@ export function setupSessionsRoutes(app: Hono) {
       return c.json({ error: "Session not found" }, 404);
     }
 
-    const body = await c.req.json<{ message?: string }>();
+    const userMessages = await c.req.json<ModelMessage[]>();
 
     const agent = await gv.agentManager.getOrCreate(session.agentProfile);
 
@@ -113,15 +112,13 @@ export function setupSessionsRoutes(app: Hono) {
       await saveModelMessages(extraMessages, sessionId);
     }
 
-    if (body.message) {
-      const userMessage: ModelMessage = { role: "user", content: body.message };
+    if (userMessages.length) {
+      messages.push(...userMessages);
 
-      messages.push(userMessage);
-
-      await saveModelMessages(userMessage, sessionId);
+      await saveModelMessages(userMessages, sessionId);
     }
 
-    const output = await agent.runChatLoop(messages);
+    const output = await agent.runChatLoop(messages, sessionId);
 
     await saveModelMessages(output.response.messages, sessionId);
 

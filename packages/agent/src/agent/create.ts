@@ -7,7 +7,7 @@ import {
   type ToolSet,
 } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
-import { loadToolsets } from "../toolset";
+import { loadDynamicToolsets, loadStaticToolsets } from "../toolset";
 import type { LoadedToolset } from "../toolset/types";
 import { readFile } from "node:fs/promises";
 import { gv } from "../global";
@@ -15,48 +15,63 @@ import { gv } from "../global";
 export class MyAgentImplement {
   config: Config.AgentConfig;
 
-  instance?: ToolLoopAgent;
-
   toolsets: LoadedToolset[] = [];
 
   abortController?: AbortController;
+
+  _initlized = false;
 
   constructor(agentConfig: Config.AgentConfig) {
     this.config = agentConfig;
   }
 
   async init() {
-    if (this.instance) {
+    if (this._initlized) {
       return;
     }
 
+    this._initlized = true;
+
     const agentConfig = this.config;
 
-    this.toolsets = await loadToolsets(agentConfig.toolset);
-
-    this.instance = new ToolLoopAgent({
-      model: resolveProvider(agentConfig.model, gv.config),
-      instructions: await createInstructions(agentConfig, this.toolsets),
-      tools: resolveTools(this.toolsets),
-      stopWhen: [stepCountIs(agentConfig.context?.maxIterations ?? 100)],
-    });
+    this.toolsets = await loadStaticToolsets(agentConfig.toolset);
   }
 
-  async runChatLoop(messages: ModelMessage[]) {
+  async runChatLoop(messages: ModelMessage[], sessionId: string) {
     await this.init();
 
     if (this.abortController) {
       this.abortController.abort();
     }
 
-    this.abortController = new AbortController();
+    const agentConfig = this.config;
 
-    const output = await this.instance!.generate({
-      abortSignal: this.abortController.signal,
-      messages,
-    });
+    const dynamicToolsets = await loadDynamicToolsets(
+      sessionId,
+      agentConfig.toolset,
+    );
 
-    return output;
+    try {
+      const mergedToolsets = [...this.toolsets, ...dynamicToolsets];
+
+      const instance = new ToolLoopAgent({
+        model: resolveProvider(agentConfig.model, gv.config),
+        instructions: await createInstructions(agentConfig, mergedToolsets),
+        tools: resolveTools(mergedToolsets),
+        stopWhen: [stepCountIs(agentConfig.context?.maxIterations ?? 100)],
+      });
+
+      this.abortController = new AbortController();
+
+      const output = await instance.generate({
+        abortSignal: this.abortController.signal,
+        messages,
+      });
+
+      return output;
+    } finally {
+      await Promise.all(dynamicToolsets.map((toolset) => toolset?.dispose?.()));
+    }
   }
 
   async dispose() {
