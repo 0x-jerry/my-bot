@@ -1,9 +1,11 @@
 FROM oven/bun:1-debian
 
-RUN bun i prisma -g --registry https://registry.npmmirror.com/
+ENV NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
+
+RUN bun i prisma -g
 
 # https://github.com/prisma/prisma/issues/19994#issuecomment-1612750257
-RUN prisma -v
+RUN prisma version
 
 COPY prisma/ /app/prisma
 COPY dist entrypoint.sh prisma.config.ts /app/
