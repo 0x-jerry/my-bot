@@ -131,7 +131,7 @@ class MyAgentMessageAdapter implements Agent.MessagesAdapter {
   async *send(
     sessionId: string,
     message: string,
-  ): AsyncIterable<Agent.StreamUIMesaage> {
+  ): AsyncIterable<Agent.StreamUIMessage> {
     const url = `${this._baseUrl}/api/sessions/${sessionId}/chat`;
     const response = await fetch(url, {
       method: "POST",

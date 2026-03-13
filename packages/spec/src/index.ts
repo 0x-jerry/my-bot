@@ -1,4 +1,4 @@
-import type { UIMessage } from "ai";
+import type { UIMessageChunk } from "ai";
 
 export namespace Agent {
   /**
@@ -43,7 +43,7 @@ export namespace Agent {
     /**
      * Register a callback function to be called when a message is received.
      */
-    message: [sesisonId: string, message: StreamUIMesaage];
+    message: [sessionId: string, message: StreamUIMessage];
   }
 
   export interface AgentInfo {
@@ -88,7 +88,7 @@ export namespace Agent {
     /**
      * Send messages to the agent in a session and get a stream of events.
      */
-    send(sessionId: string, message: string): AsyncIterable<StreamUIMesaage>;
+    send(sessionId: string, message: string): AsyncIterable<StreamUIMessage>;
 
     /**
      * Interrupt message processing
@@ -126,7 +126,7 @@ export namespace Agent {
     tool_call_id?: string;
   }
 
-  export type StreamUIMesaage = UIMessage;
+  export type StreamUIMessage = UIMessageChunk;
 }
 
 export namespace Common {

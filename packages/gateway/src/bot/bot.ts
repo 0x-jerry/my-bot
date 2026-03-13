@@ -138,19 +138,21 @@ export class Bot {
       let responseText = "";
 
       for await (const chunk of stream) {
-        for (const part of chunk.parts) {
-          switch (part.type) {
-            case "text":
-              if (part.state === "streaming") {
-                responseText += part.text;
-              } else if (part.state === "done") {
-                responseText += part.text;
-                await evt.send(responseText || "No response received.");
-              }
-              break;
-            default:
-              break;
-          }
+        switch (chunk.type) {
+          case "text-start":
+            responseText = "";
+            break;
+
+          case "text-delta":
+            responseText += chunk.delta;
+            break;
+
+          case "finish":
+            await evt.send(responseText || "No response received.");
+            break;
+
+          default:
+            break;
         }
       }
     } catch (error) {
@@ -160,7 +162,7 @@ export class Bot {
     }
   }
 
-  async _handleAgentMessage(sessionId: string, data: Agent.StreamUIMesaage) {
+  async _handleAgentMessage(sessionId: string, data: Agent.StreamUIMessage) {
     let chatSession = this._agentResponseState.get(sessionId);
 
     if (!chatSession) {
@@ -184,24 +186,25 @@ export class Bot {
       this._agentResponseState.set(sessionId, chatSession);
     }
 
-    for (const part of data.parts) {
-      switch (part.type) {
-        case "text":
-          if (part.state === "streaming") {
-            chatSession.responseText += part.text;
-          } else if (part.state === "done") {
-            chatSession.responseText += part.text;
+    switch (data.type) {
+      case "text-start":
+        chatSession.responseText = "";
+        break;
 
-            if (chatSession.responseText) {
-              this._agentResponseState.delete(sessionId);
+      case "text-delta":
+        chatSession.responseText += data.delta;
+        break;
 
-              await this.im.send(chatSession.chatId, chatSession.responseText);
-            }
-          }
-          break;
-        default:
-          break;
-      }
+      case "finish":
+        this._agentResponseState.delete(sessionId);
+
+        if (chatSession.responseText) {
+          await this.im.send(chatSession.chatId, chatSession.responseText);
+        }
+        break;
+
+      default:
+        break;
     }
   }
 

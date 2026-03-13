@@ -1,18 +1,18 @@
-import type { SeesionCronJobModel } from "../generated/prisma/models";
+import type { SessionCronJobModel } from "../generated/prisma/models";
 import { Cron } from "croner";
 import { gv } from "../global";
 import { chatWithSession } from "./chat";
 
 export interface CronJob {
   job: Cron;
-  config: SeesionCronJobModel;
+  config: SessionCronJobModel;
 }
 
 export class SessionCronJobManager {
   jobs = new Map<string, CronJob>();
 
   async add(cron: string, reason: string, sessionId: string) {
-    const exist = await gv.db.seesionCronJob.findFirst({
+    const exist = await gv.db.sessionCronJob.findFirst({
       where: {
         sessionId,
         cron,
@@ -24,7 +24,7 @@ export class SessionCronJobManager {
       return exist;
     }
 
-    const job = await gv.db.seesionCronJob.create({
+    const job = await gv.db.sessionCronJob.create({
       data: {
         sessionId,
         cron,
@@ -102,7 +102,7 @@ export class SessionCronJobManager {
     job?.job.stop();
     this.jobs.delete(jobId);
 
-    await gv.db.seesionCronJob.delete({
+    await gv.db.sessionCronJob.delete({
       where: {
         id: jobId,
       },
