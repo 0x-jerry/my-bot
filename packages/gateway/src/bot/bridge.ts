@@ -60,7 +60,7 @@ export class BotBridge {
 
     this.im.setCommands(COMMANDS);
     if (options.debug) {
-      this.log = createLogger('BotBridge');
+      this.log = createLogger("BotBridge");
     }
   }
 
@@ -70,6 +70,10 @@ export class BotBridge {
     this.im.on("message", (event: IM.MessageEvent) =>
       this._handleMessage(event),
     );
+
+    this.agent.on("message", (sessionId, message) => {
+      // todo, get chat then send mesage to im
+    });
 
     const commandHandler = this._createCommandHandler();
 
@@ -98,32 +102,21 @@ export class BotBridge {
       const stream = this.agent.messages.send(sessionId, evt.content);
 
       let responseText = "";
-      for await (const streamEvent of stream) {
-        switch (streamEvent.type) {
-          case "stream_started":
-            // Optional: Send a typing indicator or "Thinking..." message
-            break;
-          case "stream_stopped":
-            // Final response is already sent if we're doing incremental updates
-            // But for now, let's just send the whole thing at the end for simplicity
-            await evt.send(responseText || "No response received.");
-            break;
-          case "agent_choice":
-            if (streamEvent.content) {
-              responseText += streamEvent.content;
-            }
-            break;
-          case "tool_call":
-            // Handle tool calls if needed
-            await evt.send(
-              `Tool call complete: ${streamEvent.tool_call?.name}`,
-            );
-            break;
-          case "error":
-            await evt.send(`Error: ${streamEvent.error}`);
-            break;
-          default:
-            break;
+
+      for await (const chunk of stream) {
+        for (const part of chunk.parts) {
+          switch (part.type) {
+            case "text":
+              if (part.state === "streaming") {
+                responseText += part.text;
+              } else if (part.state === "done") {
+                responseText += part.text;
+                await evt.send(responseText || "No response received.");
+              }
+              break;
+            default:
+              break;
+          }
         }
       }
     } catch (error) {

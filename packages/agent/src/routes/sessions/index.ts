@@ -101,31 +101,4 @@ export function setupSessionsRoutes(app: Hono) {
 
     return resp;
   });
-
-  app.get(
-    "/:id/ws",
-    upgradeWebSocket((c) => {
-      const sessionId = c.req.param("id");
-
-      return {
-        onClose() {
-          if (!sessionId) {
-            return;
-          }
-
-          gv.sessionStateManager.remove(sessionId);
-        },
-        async onOpen(_evt, ws) {
-          if (!sessionId) {
-            return;
-          }
-
-          gv.sessionStateManager.upsert({
-            id: sessionId,
-            ws,
-          });
-        },
-      };
-    }),
-  );
 }

@@ -13,6 +13,7 @@
       "name": "@my-bot/adapter-agent",
       "version": "1.0.0",
       "dependencies": {
+        "@0x-jerry/utils": "^6.3.0",
         "@my-bot/spec": "workspace:*",
         "got": "^14.6.6",
       },

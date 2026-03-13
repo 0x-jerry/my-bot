@@ -35,10 +35,17 @@ export namespace Agent {
      */
     messages: MessagesAdapter;
 
+    on<T extends keyof AdapterEvents>(
+      event: T,
+      callback: (...args: AdapterEvents[T]) => void,
+    ): void;
+  }
+
+  export interface AdapterEvents {
     /**
      * Register a callback function to be called when a message is received.
      */
-    onMessage(callback: (event: UIMessage) => void): void;
+    message: [sesisonId: string, message: StreamUIMesaage];
   }
 
   export interface AgentInfo {
@@ -83,7 +90,7 @@ export namespace Agent {
     /**
      * Send messages to the agent in a session and get a stream of events.
      */
-    send(sessionId: string, message: string): AsyncIterable<UIMessage>;
+    send(sessionId: string, message: string): AsyncIterable<StreamUIMesaage>;
 
     /**
      * Interrupt message processing
@@ -120,6 +127,8 @@ export namespace Agent {
     name?: string;
     tool_call_id?: string;
   }
+
+  export type StreamUIMesaage = UIMessage;
 }
 
 export namespace Common {

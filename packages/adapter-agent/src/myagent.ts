@@ -1,3 +1,4 @@
+import { EventEmitter } from "@0x-jerry/utils";
 import type { Agent } from "@my-bot/spec";
 import got from "got";
 
@@ -10,11 +11,15 @@ export class MyAgentAdapter implements Agent.Adapter {
   name = "my-agent";
   description = "Adapter for my agent API";
 
+  _events = new EventEmitter<Agent.AdapterEvents>();
+
   _baseUrl: string;
   _sessionAgentMap: Map<string, string> = new Map();
 
   sessions: Agent.SessionsAdapter;
   messages: Agent.MessagesAdapter;
+
+  ws?: WebSocket
 
   constructor(options: MyAgentAdapterOptions) {
     this._baseUrl = options.baseUrl;
@@ -25,14 +30,31 @@ export class MyAgentAdapter implements Agent.Adapter {
     );
   }
 
+  on<T extends keyof Agent.AdapterEvents>(
+    event: T,
+    callback: (...args: Agent.AdapterEvents[T]) => void,
+  ): void {
+    this._events.on(event, callback);
+  }
+
   async start(): Promise<void> {
-    // In a real scenario, you might want to ping the cagent API to verify connectivity
-    // and fetch agent details to populate `name` and `description`.
-    console.log(`CagentAdapter for ${this._baseUrl} started.`);
+    const ws = new WebSocket(`${this._baseUrl}/ws`);
+    this.ws = ws
+
+    ws.addEventListener("message", (evt) => {
+      console.log(evt.data);
+
+      const msg = JSON.parse(evt.data);
+
+      if (msg.type === "message") {
+        const sessionId = msg.sessionId;
+        this._events.emit("message", sessionId, msg.data);
+      }
+    });
   }
 
   async stop(): Promise<void> {
-    console.log(`CagentAdapter for ${this._baseUrl} stopped.`);
+    this.ws?.close()
   }
 
   async agents(): Promise<Agent.AgentInfo[]> {
@@ -119,7 +141,7 @@ class MyAgentMessageAdapter implements Agent.MessagesAdapter {
   async *send(
     sessionId: string,
     message: string,
-  ): AsyncIterable<Agent.StreamEvent> {
+  ): AsyncIterable<Agent.StreamUIMesaage> {
     const agentId = this.getAgentIdForSession(sessionId);
 
     if (!agentId) {
@@ -135,24 +157,9 @@ class MyAgentMessageAdapter implements Agent.MessagesAdapter {
       body: JSON.stringify([{ role: "user", content: message }]),
     });
 
-    if (!response.body) {
-      throw new Error("Response body is null");
-    }
+    const responseBody = response;
 
-    const responseBody: any = await response.json();
-
-    yield {
-      type: "agent_choice",
-      session_id: sessionId,
-      agent: agentId,
-      content: responseBody.text,
-    };
-
-    yield {
-      type: "stream_stopped",
-      session_id: sessionId,
-      agent: agentId,
-    };
+    return responseBody;
   }
 
   async delete(sessionId: string, messageId: string): Promise<void> {
