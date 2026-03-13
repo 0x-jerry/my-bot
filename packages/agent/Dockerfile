@@ -2,7 +2,7 @@ FROM oven/bun:1-debian
 
 ENV NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
 
-RUN bun i prisma -g
+RUN bun i dotenv prisma -g
 
 # https://github.com/prisma/prisma/issues/19994#issuecomment-1612750257
 RUN prisma version
