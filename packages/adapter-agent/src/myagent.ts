@@ -35,7 +35,7 @@ export class MyAgentAdapter implements Agent.Adapter {
   }
 
   async start(): Promise<void> {
-    const ws = new WebSocket(`${this._baseUrl}/ws`);
+    const ws = new WebSocket(`${this._baseUrl}/ws/${this.name}`);
     this.ws = ws;
 
     ws.addEventListener("message", (evt) => {

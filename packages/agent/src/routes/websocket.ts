@@ -4,14 +4,22 @@ import { gv } from "../global";
 
 export function setupWebsocketRoute(app: Hono) {
   app.get(
-    "/",
+    "/:platform",
     upgradeWebSocket((c) => {
+      const platform = c.req.param("platform");
+
       return {
-        onClose(_evt, ws) {
-          gv.connectedWebsockets.delete(ws);
+        onClose(_evt) {
+          if (!platform) {
+            return;
+          }
+
+          gv.connectedWebsockets.delete(platform);
         },
         async onOpen(_evt, ws) {
-          gv.connectedWebsockets.add(ws);
+          if (platform) {
+            gv.connectedWebsockets.set(platform, ws);
+          }
         },
       };
     }),

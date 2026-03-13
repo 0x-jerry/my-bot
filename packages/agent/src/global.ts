@@ -11,7 +11,7 @@ export interface GlobalVariables {
   config: Config.Root;
   db: PrismaClient;
   sessionCronJobs: SessionCronJobManager;
-  connectedWebsockets: Set<WSContext>;
+  connectedWebsockets: Map<string, WSContext>;
 }
 
 let initialized = false;
@@ -36,7 +36,7 @@ export async function initGlobalVariables(
 
   gv.agentManager = new AgentManager();
   gv.sessionCronJobs = new SessionCronJobManager();
-  gv.connectedWebsockets = new Set();
+  gv.connectedWebsockets = new Map();
 
   return gv;
 }
