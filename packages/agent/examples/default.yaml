@@ -15,6 +15,7 @@ agents:
       - type: memory
       - type: skill
       - type: shell
+      - type: env
 
 mcps:
   web-search:

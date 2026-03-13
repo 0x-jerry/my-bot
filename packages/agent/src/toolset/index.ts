@@ -5,6 +5,7 @@ import { createShellToolset } from "./shell";
 import { createSkillToolset } from "./skill";
 import type { LoadedToolset } from "./types";
 import { createInvokeToolset } from "./invoke";
+import { createEnvToolset } from "./env";
 
 /**
  * Resolve toolset from config.
@@ -76,6 +77,8 @@ async function loadSaticToolset(
       return await createShellToolset(tool);
     case "skill":
       return await createSkillToolset(tool);
+    case "env":
+      return await createEnvToolset(tool);
     default:
       return null;
   }

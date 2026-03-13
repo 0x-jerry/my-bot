@@ -37,10 +37,6 @@
         },
         "Config.AgentContextConfig": {
             "properties": {
-                "addDate": {
-                    "description": "Add current date to the message.\n\nEvery 1 hour, add the current datetime to the message.",
-                    "type": "boolean"
-                },
                 "extraPrompts": {
                     "description": "Load extra prompts from files.",
                     "items": {
@@ -103,8 +99,20 @@
                 },
                 {
                     "$ref": "#/definitions/ToolSet.Invoke"
+                },
+                {
+                    "$ref": "#/definitions/ToolSet.Env"
                 }
             ]
+        },
+        "ToolSet.Env": {
+            "properties": {
+                "type": {
+                    "const": "env",
+                    "type": "string"
+                }
+            },
+            "type": "object"
         },
         "ToolSet.EnvConfig": {
             "additionalProperties": {
