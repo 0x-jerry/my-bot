@@ -41,5 +41,6 @@ export function setupBot(app: Hono) {
     return bot.im.handleWebhook(c.req.raw);
   });
 
+  bot.start();
   return bot;
 }

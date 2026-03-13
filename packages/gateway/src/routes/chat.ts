@@ -7,7 +7,7 @@ export function setupOpenAIChatProxyRoutes(app: Hono) {
     const url = new URL(c.req.url);
     const config = {
       endpoint: process.env.OPENAI_API_ENDPOINT!,
-      apikey: process.env.OPENAI_API_KEY!,
+      apiKey: process.env.OPENAI_API_KEY!,
     };
 
     const target = new URL(config.endpoint);
@@ -20,8 +20,8 @@ export function setupOpenAIChatProxyRoutes(app: Hono) {
 
     // Override the Authorization header with the configured API key
     const headers = new Headers(c.req.raw.headers);
-    if (config.apikey) {
-      headers.set("Authorization", `Bearer ${config.apikey}`);
+    if (config.apiKey) {
+      headers.set("Authorization", `Bearer ${config.apiKey}`);
     }
 
     return proxy(destUrl, { headers });

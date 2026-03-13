@@ -1,11 +1,9 @@
+import 'dotenv/config';
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { loadEnvFile } from "node:process";
 import { setupMCP } from "./mcp";
 import { setupBot } from "./bot";
 import { setupOpenAIChatProxyRoutes } from "./routes/chat";
-
-loadEnvFile();
 
 const app = new Hono();
 setupMCP(app);

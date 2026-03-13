@@ -80,12 +80,12 @@ export class Bot {
     const commandHandler = this._createCommandHandler();
     this.im.on("command", commandHandler);
 
-    console.log(`Bot ${this.name} started`);
+    this.log?.info(`Bot ${this.name} started`);
   }
 
   async stop() {
     await Promise.all([this.im.stop(), this.agent.stop()]);
-    console.log(`Bot ${this.name} stopped`);
+    this.log?.info(`Bot ${this.name} stopped`);
   }
 
   async _getSessionId(chatId: string): Promise<string | undefined> {

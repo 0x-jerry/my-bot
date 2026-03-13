@@ -11,7 +11,7 @@ services:
       - ./examples/default.yaml:/app/agent.yaml:ro
       - ./data:/data
     ports:
-      - 9756:8080
+      - 10080:8080
 
   search-mcp:
     image: ghcr.io/aas-ee/open-web-search:v1.2.5
