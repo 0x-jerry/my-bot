@@ -5,5 +5,8 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {},
-  "devDependencies": {}
+  "devDependencies": {},
+  "dependencies": {
+    "ai": "^6.0.116"
+  }
 }

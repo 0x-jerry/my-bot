@@ -1,3 +1,5 @@
+import type { UIMessage } from "ai";
+
 export namespace Agent {
   /**
    * Agent Adapter Interface
@@ -32,6 +34,11 @@ export namespace Agent {
      * Messages Adapter
      */
     messages: MessagesAdapter;
+
+    /**
+     * Register a callback function to be called when a message is received.
+     */
+    onMessage(callback: (event: UIMessage) => void): void;
   }
 
   export interface AgentInfo {
@@ -76,7 +83,7 @@ export namespace Agent {
     /**
      * Send messages to the agent in a session and get a stream of events.
      */
-    send(sessionId: string, message: string): AsyncIterable<StreamEvent>;
+    send(sessionId: string, message: string): AsyncIterable<UIMessage>;
 
     /**
      * Interrupt message processing
@@ -112,34 +119,6 @@ export namespace Agent {
     content: string;
     name?: string;
     tool_call_id?: string;
-  }
-
-  export type StreamEventType =
-    | "stream_started"
-    | "stream_stopped"
-    | "agent_choice"
-    | "tool_call"
-    | "tool_call_response"
-    | "error";
-
-  export interface StreamEvent {
-    type: StreamEventType;
-    session_id: string;
-    agent: string;
-    content?: string;
-    tool_call?: ToolCall;
-    error?: string;
-  }
-
-  export interface ToolCall {
-    id: string;
-    name: string;
-    arguments: string;
-  }
-
-  export interface ToolCallResponse {
-    tool_call_id: string;
-    output: string;
   }
 }
 

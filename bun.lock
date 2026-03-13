@@ -79,6 +79,9 @@
     "packages/spec": {
       "name": "@my-bot/spec",
       "version": "0.0.1",
+      "dependencies": {
+        "ai": "^6.0.116",
+      },
     },
   },
   "packages": {

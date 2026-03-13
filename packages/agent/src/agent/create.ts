@@ -1,5 +1,6 @@
 import type { Config } from "../config/types";
 import {
+  type AgentCallParameters,
   type ModelMessage,
   stepCountIs,
   type SystemModelMessage,
@@ -16,8 +17,6 @@ export class MyAgentImplement {
   config: Config.AgentConfig;
 
   toolsets: LoadedToolset[] = [];
-
-  abortController?: AbortController;
 
   _initlized = false;
 
@@ -37,12 +36,12 @@ export class MyAgentImplement {
     this.toolsets = await loadStaticToolsets(agentConfig.toolset);
   }
 
-  async runChatLoop(messages: ModelMessage[], sessionId: string) {
+  async runChatLoop(
+    messages: ModelMessage[],
+    sessionId: string,
+    opt: Omit<AgentCallParameters<never>, "prompt" | "messages">,
+  ) {
     await this.init();
-
-    if (this.abortController) {
-      this.abortController.abort();
-    }
 
     const agentConfig = this.config;
 
@@ -61,10 +60,8 @@ export class MyAgentImplement {
         stopWhen: [stepCountIs(agentConfig.context?.maxIterations ?? 100)],
       });
 
-      this.abortController = new AbortController();
-
-      const output = await instance.generate({
-        abortSignal: this.abortController.signal,
+      const output = await instance.stream({
+        ...opt,
         messages,
       });
 

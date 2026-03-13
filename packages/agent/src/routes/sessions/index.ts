@@ -118,14 +118,15 @@ export function setupSessionsRoutes(app: Hono) {
       await saveModelMessages(userMessages, sessionId);
     }
 
-    const output = await agent.runChatLoop(messages, sessionId);
-
-    await saveModelMessages(output.response.messages, sessionId);
-
-    return c.json({
-      text: output.text,
-      reasoningText: output.reasoningText,
+    const streamResult = await agent.runChatLoop(messages, sessionId, {
+      onFinish: async (output) => {
+        await saveModelMessages(output.response.messages, sessionId);
+      },
     });
+
+    const resp = streamResult.toUIMessageStreamResponse();
+
+    return resp;
   });
 }
 
