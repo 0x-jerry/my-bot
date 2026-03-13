@@ -2,6 +2,7 @@ import { TelegramAdapter } from "@my-bot/adapter-telegram";
 import { Bot } from "./bot";
 import { Hono } from "hono";
 import { MyAgentAdapter } from "@my-bot/adapter-agent";
+import path from 'node:path'
 
 export interface CreateBotOptions {
   debug?: boolean;
@@ -25,7 +26,6 @@ function createBot(opt: CreateBotOptions = {}) {
     name: "my-bot",
     im,
     agent,
-    workspaceRoot: process.env.WORKSPACE_ROOT!,
     debug,
   });
 

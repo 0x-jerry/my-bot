@@ -1,13 +1,10 @@
 import { createLogger, type Logger } from "@0x-jerry/utils";
 import type { Agent, Common, IM } from "@my-bot/spec";
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
 import { getDatabaseClient } from "../database";
 
 export interface BotOption {
   im: IM.Adapter;
   agent: Agent.Adapter;
-  workspaceRoot: string;
   debug?: boolean;
   name: string;
 }
@@ -49,7 +46,6 @@ export class Bot {
   readonly im: IM.Adapter;
   readonly agent: Agent.Adapter;
   readonly log?: Logger;
-  readonly workspaceRoot: string;
 
   _agentResponseState = new Map<string, AgentSessionCacheState>();
 
@@ -57,7 +53,6 @@ export class Bot {
     this.name = options.name;
     this.im = options.im;
     this.agent = options.agent;
-    this.workspaceRoot = options.workspaceRoot;
 
     if (options.debug) {
       this.log = createLogger(`Bot:${this.name}`);
@@ -306,7 +301,8 @@ export class Bot {
     };
 
     return async (evt: IM.CommandEvent) => {
-      this.log?.log("handle command: %o", evt);
+      this.log?.log("handle command(%s): %s, %o", evt.chatId, evt.command, evt.args);
+
       const fn = commandsHandle[evt.command];
 
       if (fn) {
@@ -322,11 +318,7 @@ export class Bot {
   }
 
   async _createSession(chatId: string) {
-    const workingDir = `c-${chatId}`;
-    await mkdir(path.join(this.workspaceRoot, workingDir), { recursive: true });
-    const session = await this.agent.sessions.create({
-      workingDir,
-    });
+    const session = await this.agent.sessions.create();
 
     const sessionId = session.id;
     await this._setSessionId(chatId, sessionId);
