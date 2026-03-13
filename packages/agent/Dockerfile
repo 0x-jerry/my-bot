@@ -7,6 +7,10 @@ COPY prisma/ /app/prisma
 
 ENV DATABASE_URL="file:/data/prod.db"
 
+WORKDIR /app
+
+RUN prisma migrate deploy
+
 EXPOSE 8080
 
 VOLUME [ "/data" ]

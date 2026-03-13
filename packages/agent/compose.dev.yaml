@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     env_file:
       - .compose-dev.env
+    environment:
+      TZ: Asia/Shanghai
     volumes:
       - ./examples/default.yaml:/app/agent.yaml:ro
       - ./data:/data
