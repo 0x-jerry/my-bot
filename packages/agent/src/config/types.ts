@@ -67,13 +67,6 @@ export namespace Config {
     extraPrompts?: string[];
 
     /**
-     * Add current date to the message.
-     *
-     * Every 1 hour, add the current datetime to the message.
-     */
-    addDate?: boolean;
-
-    /**
      * Max number of tool call iterations.
      * @default 100
      */

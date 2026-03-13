@@ -9,7 +9,6 @@ agents:
     instruction: You are a helpful assistant!
     context:
       maxIterations: 100
-      addDate: true
     toolset:
       - type: mcp
         name: web-search
@@ -19,5 +18,5 @@ agents:
 
 mcps:
   web-search:
-    remoteType: http
+    remoteType: sse
     remoteUrl: http://search-mcp:3000/sse

@@ -12,7 +12,7 @@ services:
       - 9756:8080
 
   search-mcp:
-    image: ghcr.io/aas-ee/open-web-search:v1.2.0
+    image: ghcr.io/aas-ee/open-web-search:v1.2.5
     environment:
       MODE: http
     expose:

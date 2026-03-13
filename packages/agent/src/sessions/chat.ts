@@ -1,9 +1,6 @@
 import type { ModelMessage } from "ai";
 import { saveModelMessages } from "../database/session";
 import { gv } from "../global";
-import dayjs from "dayjs";
-import type { Config } from "../config/types";
-import type { MessageModel } from "../generated/prisma/models";
 
 export interface ChatWithSessionOptions {
   /**
@@ -36,16 +33,6 @@ export async function chatWithSession(
     return JSON.parse(message.raw);
   });
 
-  const extraMessages = createExtraInformation(agent.config, history);
-
-  if (extraMessages.length) {
-    messages.push(...extraMessages);
-
-    if (opt?.saveMessages) {
-      await saveModelMessages(extraMessages, sessionId);
-    }
-  }
-
   if (inputMessages.length) {
     messages.push(...inputMessages);
 
@@ -63,35 +50,4 @@ export async function chatWithSession(
   });
 
   return streamResult;
-}
-
-function createExtraInformation(
-  config: Config.AgentConfig,
-  history: MessageModel[],
-): ModelMessage[] {
-  const msgs: ModelMessage[] = [];
-
-  if (config.context?.addDate) {
-    const now = dayjs();
-
-    const lastMessageDate = history.at(-1)?.createdAt;
-
-    if (!lastMessageDate) {
-      msgs.push({
-        role: "system",
-        content: `Current datetime: ${now.toString()}`,
-      });
-    } else {
-      // Add datetime every 1 hours
-
-      if (dayjs(lastMessageDate).add(1, "hour").isBefore(now)) {
-        msgs.push({
-          role: "system",
-          content: `Current datetime: ${now.toString()}`,
-        });
-      }
-    }
-  }
-
-  return msgs;
 }
