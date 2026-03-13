@@ -18,18 +18,18 @@ export class MyAgentImplement {
 
   toolsets: LoadedToolset[] = [];
 
-  _initlized = false;
+  _initialized = false;
 
   constructor(agentConfig: Config.AgentConfig) {
     this.config = agentConfig;
   }
 
   async init() {
-    if (this._initlized) {
+    if (this._initialized) {
       return;
     }
 
-    this._initlized = true;
+    this._initialized = true;
 
     const agentConfig = this.config;
 

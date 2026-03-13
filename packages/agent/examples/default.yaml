@@ -16,6 +16,7 @@ agents:
       - type: skill
       - type: shell
       - type: env
+      - type: invoke
 
 mcps:
   web-search:

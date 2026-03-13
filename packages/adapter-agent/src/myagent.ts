@@ -1,6 +1,11 @@
-import { EventEmitter } from "@0x-jerry/utils";
+import { createLogger, EventEmitter, type Logger } from "@0x-jerry/utils";
 import type { Agent } from "@my-bot/spec";
 import got from "got";
+import {
+  parseJsonEventStream,
+  uiMessageChunkSchema,
+  type UIMessageChunk,
+} from "ai";
 
 export interface MyAgentAdapterOptions {
   baseUrl: string;
@@ -20,11 +25,17 @@ export class MyAgentAdapter implements Agent.Adapter {
 
   ws?: WebSocket;
 
+  log?: Logger;
+
   constructor(options: MyAgentAdapterOptions) {
     this._baseUrl = options.baseUrl;
 
     this.sessions = new MyAgentSessionsAdapter(this._baseUrl);
     this.messages = new MyAgentMessageAdapter(this._baseUrl);
+
+    if (options.debug) {
+      this.log = createLogger("MyAgentAdapter");
+    }
   }
 
   on<T extends keyof Agent.AdapterEvents>(
@@ -126,12 +137,23 @@ class MyAgentSessionsAdapter implements Agent.SessionsAdapter {
 }
 
 class MyAgentMessageAdapter implements Agent.MessagesAdapter {
-  constructor(protected _baseUrl: string) {}
+  log?: Logger;
+
+  constructor(
+    protected _baseUrl: string,
+    opt?: { debug?: boolean },
+  ) {
+    if (opt?.debug) {
+      this.log = createLogger("MyAgentMessageAdapter");
+    }
+  }
 
   async *send(
     sessionId: string,
     message: string,
   ): AsyncIterable<Agent.StreamUIMessage> {
+    this.log?.info("send message to session %s: %s", sessionId, message);
+
     const url = `${this._baseUrl}/api/sessions/${sessionId}/chat`;
     const response = await fetch(url, {
       method: "POST",
@@ -141,9 +163,27 @@ class MyAgentMessageAdapter implements Agent.MessagesAdapter {
       body: JSON.stringify([{ role: "user", content: message }]),
     });
 
-    const responseBody = response;
+    if (!response.body) {
+      this.log?.warn(
+        "No response body reader available for session %s",
+        sessionId,
+      );
+      return;
+    }
 
-    return responseBody;
+    const chunkStream = parseJsonEventStream<UIMessageChunk>({
+      stream: response.body as ReadableStream,
+      schema: uiMessageChunkSchema,
+    });
+
+    for await (const chunk of chunkStream) {
+      if (chunk.success) {
+        this.log?.info("chunk: %o", chunk);
+        yield chunk.value;
+      } else {
+        this.log?.error("Error chunk: %o", chunk);
+      }
+    }
   }
 
   async delete(sessionId: string, messageId: string): Promise<void> {

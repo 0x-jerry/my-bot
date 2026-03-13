@@ -301,7 +301,12 @@ export class Bot {
     };
 
     return async (evt: IM.CommandEvent) => {
-      this.log?.log("handle command(%s): %s, %o", evt.chatId, evt.command, evt.args);
+      this.log?.log(
+        "handle command(%s): %s, %o",
+        evt.chatId,
+        evt.command,
+        evt.args,
+      );
 
       const fn = commandsHandle[evt.command];
 

@@ -15,6 +15,7 @@
       "dependencies": {
         "@0x-jerry/utils": "^6.3.0",
         "@my-bot/spec": "workspace:*",
+        "ai": "^6.0.116",
         "got": "^14.6.6",
       },
     },
