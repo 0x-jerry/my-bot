@@ -11,6 +11,24 @@ export interface CronJob {
 export class SessionCronJobManager {
   jobs = new Map<string, CronJob>();
 
+  /**
+   * Load all cron jobs from the database and initialize them.
+   */
+  async initialize() {
+    const cronJobs = await gv.db.sessionCronJob.findMany();
+
+    for (const job of cronJobs) {
+      if (!this.jobs.has(job.id)) {
+        const cronJob = new Cron(job.cron, () => this._cronCallback(job.id));
+
+        this.jobs.set(job.id, {
+          job: cronJob,
+          config: job,
+        });
+      }
+    }
+  }
+
   async add(cron: string, reason: string, sessionId: string) {
     const exist = await gv.db.sessionCronJob.findFirst({
       where: {

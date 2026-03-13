@@ -36,6 +36,8 @@ export async function initGlobalVariables(
 
   gv.agentManager = new AgentManager();
   gv.sessionCronJobs = new SessionCronJobManager();
+  await gv.sessionCronJobs.initialize();
+
   gv.connectedWebsockets = new Map();
 
   return gv;
