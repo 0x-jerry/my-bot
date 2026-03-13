@@ -38,7 +38,7 @@ export function setupBot(app: Hono) {
   });
 
   app.post("/webhook/tg", (c) => {
-    return bot.bridge.im.handleWebhook(c.req.raw);
+    return bot.im.handleWebhook(c.req.raw);
   });
 
   return bot;

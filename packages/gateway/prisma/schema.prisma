@@ -4,7 +4,7 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
-  runtime = "bun"
+  runtime  = "bun"
 }
 
 datasource db {
@@ -18,11 +18,14 @@ model Memory {
   memory String
 }
 
-model BotData {
+model BotSession {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name String @unique
-  data String
+  bot       String
+  sessionId String
+  chatId    String
+
+  @@unique([bot, chatId])
 }
