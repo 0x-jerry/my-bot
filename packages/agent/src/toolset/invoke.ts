@@ -4,7 +4,7 @@ import z from "zod";
 import { gv } from "../global";
 
 export async function createInvokeToolset(
-  config: ToolSet.Invoke,
+  _config: ToolSet.Invoke,
   sessionId: string,
 ): Promise<LoadedToolset> {
   const addRule = tool({
@@ -14,13 +14,7 @@ export async function createInvokeToolset(
       reason: z.string().describe("The reason why you want to invoke yourself"),
     }),
     execute: async ({ cron, reason }) => {
-      const cronJob = await gv.db.seesionCronJob.create({
-        data: {
-          sessionId,
-          cron,
-          reason,
-        },
-      });
+      const cronJob = await gv.sessionCronJobs.add(cron, reason, sessionId);
 
       return `Cron job ${cronJob.id} added`;
     },
@@ -37,12 +31,7 @@ export async function createInvokeToolset(
       });
 
       return {
-        rules: cronJobs.map((job) => ({
-          id: job.id,
-          createdAt: job.createdAt,
-          cron: job.cron,
-          reason: job.reason,
-        })),
+        rules: cronJobs,
       };
     },
   });
@@ -53,11 +42,7 @@ export async function createInvokeToolset(
       id: z.string().describe("The ID of the rule to delete"),
     }),
     execute: async ({ id }) => {
-      await gv.db.seesionCronJob.delete({
-        where: {
-          id,
-        },
-      });
+      await gv.sessionCronJobs.remove(id);
 
       return `Cron job ${id} deleted`;
     },
