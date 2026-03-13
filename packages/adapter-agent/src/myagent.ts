@@ -14,20 +14,17 @@ export class MyAgentAdapter implements Agent.Adapter {
   _events = new EventEmitter<Agent.AdapterEvents>();
 
   _baseUrl: string;
-  _sessionAgentMap: Map<string, string> = new Map();
 
   sessions: Agent.SessionsAdapter;
   messages: Agent.MessagesAdapter;
 
-  ws?: WebSocket
+  ws?: WebSocket;
 
   constructor(options: MyAgentAdapterOptions) {
     this._baseUrl = options.baseUrl;
 
     this.sessions = new MyAgentSessionsAdapter(this._baseUrl);
-    this.messages = new MyAgentMessageAdapter(this._baseUrl, (sessionId) =>
-      this._sessionAgentMap.get(sessionId),
-    );
+    this.messages = new MyAgentMessageAdapter(this._baseUrl);
   }
 
   on<T extends keyof Agent.AdapterEvents>(
@@ -39,7 +36,7 @@ export class MyAgentAdapter implements Agent.Adapter {
 
   async start(): Promise<void> {
     const ws = new WebSocket(`${this._baseUrl}/ws`);
-    this.ws = ws
+    this.ws = ws;
 
     ws.addEventListener("message", (evt) => {
       console.log(evt.data);
@@ -54,7 +51,7 @@ export class MyAgentAdapter implements Agent.Adapter {
   }
 
   async stop(): Promise<void> {
-    this.ws?.close()
+    this.ws?.close();
   }
 
   async agents(): Promise<Agent.AgentInfo[]> {
@@ -66,10 +63,6 @@ export class MyAgentAdapter implements Agent.Adapter {
       name: agent.name,
       description: agent.description || "",
     }));
-  }
-
-  async useAgent(sessionId: string, agentId: string): Promise<void> {
-    this._sessionAgentMap.set(sessionId, agentId);
   }
 }
 
@@ -133,21 +126,12 @@ class MyAgentSessionsAdapter implements Agent.SessionsAdapter {
 }
 
 class MyAgentMessageAdapter implements Agent.MessagesAdapter {
-  constructor(
-    protected _baseUrl: string,
-    private getAgentIdForSession: (sessionId: string) => string | undefined,
-  ) {}
+  constructor(protected _baseUrl: string) {}
 
   async *send(
     sessionId: string,
     message: string,
   ): AsyncIterable<Agent.StreamUIMesaage> {
-    const agentId = this.getAgentIdForSession(sessionId);
-
-    if (!agentId) {
-      throw new Error(`No agent selected for session ${sessionId}`);
-    }
-
     const url = `${this._baseUrl}/api/sessions/${sessionId}/chat`;
     const response = await fetch(url, {
       method: "POST",

@@ -103,6 +103,7 @@ export class Bot {
 
   async _setSessionId(chatId: string, sessionId: string): Promise<void> {
     const db = getDatabaseClient();
+
     await db.botSession.upsert({
       where: {
         bot_chatId: {
@@ -249,7 +250,6 @@ export class Bot {
             return;
           }
 
-          await agent.useAgent(sessionId, agentId);
           await evt.reply(
             `Agent ${agentId} selected for current session ${sessionId}`,
           );
@@ -327,14 +327,6 @@ export class Bot {
 
     const sessionId = session.id;
     await this._setSessionId(chatId, sessionId);
-
-    // Auto-select the first available agent for a new session
-    const firstAgent = (await this.agent.agents()).at(0);
-    if (!firstAgent) {
-      throw new Error(`No available agent found!`);
-    }
-
-    await this.agent.useAgent(sessionId, firstAgent.id);
 
     return session;
   }

@@ -23,8 +23,6 @@ export namespace Agent {
      */
     agents(): Promise<AgentInfo[]>;
 
-    useAgent(sessionId: string, agentId: string): Promise<void>;
-
     /**
      * Sessions Adapter
      */

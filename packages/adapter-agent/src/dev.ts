@@ -16,8 +16,6 @@ const sessionId = sessions.at(0)!.id;
 const data = await cagent.sessions.get(sessionId);
 console.log(data);
 
-await cagent.useAgent(sessionId, agentId);
-
 const msgs = await cagent.messages.getAll(sessionId);
 
 console.log(msgs);
