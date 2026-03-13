@@ -3,9 +3,14 @@ provider:
     type: openai-compatible
     baseUrl: https://dashscope.aliyuncs.com/compatible-mode/v1
 
+  ollama:
+    type: openai-compatible
+    baseUrl: http://host.docker.internal:11434/v1
+
 agents:
   root:
-    model: dashscope/qwen3.5-35b-a3b
+    model: ollama/qwen3.5:2b
+    # model: dashscope/qwen3.5-35b-a3b
     instruction: You are a helpful assistant!
     context:
       maxIterations: 100

@@ -24,11 +24,7 @@ export async function createInvokeToolset(
     description: "List all the rules you have added",
     inputSchema: z.object({}),
     execute: async () => {
-      const cronJobs = await gv.db.sessionCronJob.findMany({
-        where: {
-          sessionId,
-        },
-      });
+      const cronJobs = await gv.db.sessionCronJob.findMany({});
 
       return {
         rules: cronJobs,
