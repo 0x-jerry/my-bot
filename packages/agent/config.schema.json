@@ -7,11 +7,14 @@
                     "$ref": "#/definitions/Config.AgentContextConfig",
                     "description": "Add extra context to the message."
                 },
+                "description": {
+                    "type": "string"
+                },
                 "instruction": {
                     "type": "string"
                 },
                 "model": {
-                    "description": "syntax: providerKey/modelName\neg: openai/gpt-3.5-turbo",
+                    "description": "syntax: providerKey/modelName\n\neg: openai/gpt-3.5-turbo",
                     "type": "string"
                 },
                 "name": {
@@ -97,12 +100,24 @@
                 },
                 {
                     "$ref": "#/definitions/ToolSet.Shell"
+                },
+                {
+                    "$ref": "#/definitions/ToolSet.Invoke"
                 }
             ]
         },
         "ToolSet.EnvConfig": {
             "additionalProperties": {
                 "type": "string"
+            },
+            "type": "object"
+        },
+        "ToolSet.Invoke": {
+            "properties": {
+                "type": {
+                    "const": "invoke",
+                    "type": "string"
+                }
             },
             "type": "object"
         },
@@ -196,10 +211,6 @@
         },
         "ToolSet.Memory": {
             "properties": {
-                "file": {
-                    "description": "The path to the memory file.",
-                    "type": "string"
-                },
                 "remoteUrl": {
                     "description": "The URL of the memory server.",
                     "type": "string"

@@ -19,5 +19,5 @@ agents:
 
 mcps:
   web-search:
-    remoteType: sse
+    remoteType: http
     remoteUrl: http://search-mcp:3000/sse
