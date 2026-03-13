@@ -1,6 +1,5 @@
 import { createLogger, type Logger } from "@0x-jerry/utils";
 import type { Agent, Common, IM } from "@my-bot/spec";
-import { name as pkgName } from "../package.json";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
@@ -61,7 +60,7 @@ export class BotBridge {
 
     this.im.setCommands(COMMANDS);
     if (options.debug) {
-      this.log = createLogger(pkgName);
+      this.log = createLogger('BotBridge');
     }
   }
 

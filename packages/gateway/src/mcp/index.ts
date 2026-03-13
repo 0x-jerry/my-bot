@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPTransport } from "@hono/mcp";
-import { ToolDefinition } from "./utils";
+import type { ToolDefinition } from "./utils";
 import { memoryTools } from "./memory";
 
 export function setupMCP(app: Hono) {

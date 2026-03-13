@@ -1,5 +1,5 @@
-import { BotBridge, BotBridgeData } from "@my-bot/bridge";
-import { Agent, IM } from "@my-bot/spec";
+import { BotBridge, type BotBridgeData } from "./bridge";
+import type { Agent, IM } from "@my-bot/spec";
 import { getBotData, saveBotData } from "./database/data";
 
 export interface BotOption {

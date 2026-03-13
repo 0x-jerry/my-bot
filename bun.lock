@@ -57,14 +57,6 @@
         "typescript-json-schema": "^0.67.1",
       },
     },
-    "packages/bridge": {
-      "name": "@my-bot/bridge",
-      "version": "1.0.0",
-      "dependencies": {
-        "@0x-jerry/utils": "^6.3.0",
-        "@my-bot/spec": "workspace:*",
-      },
-    },
     "packages/gateway": {
       "name": "gateway",
       "version": "1.0.0",
@@ -75,7 +67,6 @@
         "@modelcontextprotocol/sdk": "^1.27.1",
         "@my-bot/adapter-agent": "workspace:*",
         "@my-bot/adapter-telegram": "workspace:*",
-        "@my-bot/bridge": "workspace:*",
         "@my-bot/spec": "workspace:*",
         "@prisma/client": "^7.4.1",
         "dayjs": "^1.11.19",
@@ -156,8 +147,6 @@
     "@my-bot/adapter-agent": ["@my-bot/adapter-agent@workspace:packages/adapter-agent"],
 
     "@my-bot/adapter-telegram": ["@my-bot/adapter-telegram@workspace:packages/adapter-telegram"],
-
-    "@my-bot/bridge": ["@my-bot/bridge@workspace:packages/bridge"],
 
     "@my-bot/spec": ["@my-bot/spec@workspace:packages/spec"],
 
