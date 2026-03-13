@@ -63,8 +63,10 @@ export class SessionCronJobManager {
 
     const newSession = await gv.db.session.create({
       data: {
+        title: `Cron task for session ${session.id}`,
         agentProfile: session.agentProfile,
-        metadata: session.metadata,
+        metadata: JSON.stringify({ sessionId: session.id }),
+        cronTask: true,
       },
     });
 

@@ -17,6 +17,11 @@ model Session {
   updatedAt    DateTime @updatedAt
   agentProfile String
 
+  // Session title
+  title    String  @default("")
+  // Created by cron job
+  cronTask Boolean @default(false)
+
   metadata String?
 }
 
@@ -46,6 +51,4 @@ model SessionCronJob {
 
   cron   String
   reason String
-
-	@@map("SeesionCronJob")
 }

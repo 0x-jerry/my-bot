@@ -49,7 +49,9 @@ export async function createInvokeToolset(
   });
 
   return {
-    instruction: "You can add, list, and delete rules to invoke yourself",
+    instruction:
+      "You can add, list, and delete rules to invoke yourself, the message you replied to will send to the user directly." +
+      "So you can use those tool to create some daily schedule tasks or one time tasks.",
     toolset: {
       "add-invoke-rule": addRule,
       "list-invoke-rules": listRules,
