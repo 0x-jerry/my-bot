@@ -81,18 +81,16 @@ export class SessionCronJobManager {
       },
     );
 
-    const state = gv.sessionStateManager.get(session.id);
-
     for await (const chunk of streamResult.toUIMessageStream()) {
-      if (state?.ws) {
-        const msg = {
-          type: "message",
-          sessionId: session.id,
-          data: chunk,
-        };
+      const msg = {
+        type: "message",
+        sessionId: session.id,
+        data: chunk,
+      };
 
-        state?.ws?.send(JSON.stringify(msg));
-      }
+      gv.connectedWebsockets.forEach((ws) => {
+        ws.send(JSON.stringify(msg));
+      });
     }
   }
 

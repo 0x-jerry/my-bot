@@ -6,25 +6,12 @@ export function setupWebsocketRoute(app: Hono) {
   app.get(
     "/",
     upgradeWebSocket((c) => {
-      const sessionId = c.req.param("id");
-
       return {
-        onClose() {
-          if (!sessionId) {
-            return;
-          }
-
-          gv.sessionStateManager.remove(sessionId);
+        onClose(_evt, ws) {
+          gv.connectedWebsockets.delete(ws);
         },
         async onOpen(_evt, ws) {
-          if (!sessionId) {
-            return;
-          }
-
-          gv.sessionStateManager.upsert({
-            id: sessionId,
-            ws,
-          });
+          gv.connectedWebsockets.add(ws);
         },
       };
     }),
