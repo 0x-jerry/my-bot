@@ -16,5 +16,8 @@
     "@my-bot/spec": "workspace:*",
     "ai": "^6.0.116",
     "got": "^14.6.6"
+  },
+  "devDependencies": {
+    "picocolors": "^1.1.1"
   }
 }
