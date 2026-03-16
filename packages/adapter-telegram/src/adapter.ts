@@ -99,6 +99,14 @@ export class TelegramAdapter implements IM.Adapter {
         case "text":
           await sendText(part.text);
           break;
+        case "file":
+          if (part.data instanceof URL) {
+            await sendText(part.data.toString());
+          } else {
+            const blob = new Blob([part.data], { type: part.mediaType });
+            await sendFile(blob);
+          }
+          break;
 
         default:
           break;
@@ -106,6 +114,18 @@ export class TelegramAdapter implements IM.Adapter {
     }
 
     return;
+
+    function sendFile(file: Blob) {
+      return bot.api.sendDocument({
+        chat_id: chatId,
+        document: file,
+        reply_parameters: messageId
+          ? {
+              message_id: parseInt(messageId),
+            }
+          : undefined,
+      });
+    }
 
     function sendText(content: string) {
       return bot.api.sendMessage({

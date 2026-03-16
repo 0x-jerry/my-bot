@@ -47,8 +47,6 @@ export class Bot {
   readonly agent: Agent.Adapter;
   readonly log?: Logger;
 
-  _agentResponseState = new Map<string, AgentSessionCacheState>();
-
   constructor(options: BotOption) {
     this.name = options.name;
     this.im = options.im;
@@ -157,50 +155,22 @@ export class Bot {
     }
   }
 
-  async _handleAgentMessage(sessionId: string, data: Agent.StreamUIMessage) {
-    let chatSession = this._agentResponseState.get(sessionId);
-
-    if (!chatSession) {
-      const chatSessionData = await getDatabaseClient().botSession.findFirst({
-        where: {
-          bot: this.name,
-          sessionId,
-        },
-      });
-
-      if (!chatSessionData) {
-        return;
-      }
-
-      chatSession = {
+  async _handleAgentMessage(
+    sessionId: string,
+    data: Common.AgentMessageContent,
+  ) {
+    const chatSessionData = await getDatabaseClient().botSession.findFirst({
+      where: {
+        bot: this.name,
         sessionId,
-        chatId: chatSessionData.chatId,
-        responseText: "",
-      };
+      },
+    });
 
-      this._agentResponseState.set(sessionId, chatSession);
+    if (!chatSessionData) {
+      return;
     }
 
-    switch (data.type) {
-      case "text-start":
-        chatSession.responseText = "";
-        break;
-
-      case "text-delta":
-        chatSession.responseText += data.delta;
-        break;
-
-      case "finish":
-        this._agentResponseState.delete(sessionId);
-
-        if (chatSession.responseText) {
-          await this.im.send(chatSession.chatId, chatSession.responseText);
-        }
-        break;
-
-      default:
-        break;
-    }
+    await this.im.send(chatSessionData.chatId, data);
   }
 
   _createCommandHandler() {
