@@ -101,17 +101,18 @@ export class SessionCronJobManager {
       },
     );
 
-    for await (const chunk of streamResult.toUIMessageStream()) {
-      const msg = {
-        type: "message",
-        sessionId: session.id,
-        data: chunk,
-      };
+    const resp = await streamResult.response;
+    const lastMsgContent = resp.messages.at(-1)?.content;
 
-      gv.connectedWebsockets.forEach((ws) => {
-        ws.send(JSON.stringify(msg));
-      });
-    }
+    const msg = {
+      type: "message",
+      sessionId: session.id,
+      data: lastMsgContent || {},
+    };
+
+    gv.connectedWebsockets.forEach((ws) => {
+      ws.send(JSON.stringify(msg));
+    });
   }
 
   async remove(jobId: string) {
