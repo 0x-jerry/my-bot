@@ -1,4 +1,4 @@
-import type { UIMessageChunk } from "ai";
+import type { AssistantContent, UIMessageChunk, UserContent } from "ai";
 
 export namespace Agent {
   /**
@@ -43,7 +43,7 @@ export namespace Agent {
     /**
      * Register a callback function to be called when a message is received.
      */
-    message: [sessionId: string, message: StreamUIMessage];
+    message: [sessionId: string, message: Common.AgentMessageContent];
   }
 
   export interface AgentInfo {
@@ -88,7 +88,7 @@ export namespace Agent {
     /**
      * Send messages to the agent in a session and get a stream of events.
      */
-    send(sessionId: string, message: string): AsyncIterable<StreamUIMessage>;
+    send(sessionId: string, message: Common.UserMessageContent): AsyncIterable<StreamUIMessage>;
 
     /**
      * Interrupt message processing
@@ -137,6 +137,10 @@ export namespace Common {
     command: string;
     description: string;
   }
+
+  export type UserMessageContent = UserContent;
+
+  export type AgentMessageContent = AssistantContent;
 }
 
 export namespace IM {
@@ -159,12 +163,16 @@ export namespace IM {
     /**
      * Send a message to a chat.
      */
-    send(chatId: string, text: string): Promise<void>;
+    send(chatId: string, content: Common.AgentMessageContent): Promise<void>;
 
     /**
      * Reply to a message in a chat.
      */
-    reply(chatId: string, messageId: string, content: string): Promise<void>;
+    reply(
+      chatId: string,
+      messageId: string,
+      content: Common.AgentMessageContent,
+    ): Promise<void>;
 
     /**
      * Set the commands for the bot.
@@ -188,16 +196,16 @@ export namespace IM {
   }
 
   export interface EventBase {
+    userId: string;
     chatId: string;
     messageId: string;
-    userId: string;
 
-    send(content: string): Promise<void>;
-    reply(content: string): Promise<void>;
+    send(content: Common.AgentMessageContent): Promise<void>;
+    reply(content: Common.AgentMessageContent): Promise<void>;
   }
 
   export interface MessageEvent extends EventBase {
-    content: string;
+    content: Common.UserMessageContent;
   }
 
   export interface CommandEvent extends EventBase {

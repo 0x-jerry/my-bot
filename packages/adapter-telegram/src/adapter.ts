@@ -82,25 +82,57 @@ export class TelegramAdapter implements IM.Adapter {
     console.log("telegram bot stopped");
   }
 
-  async send(chatId: string, text: string): Promise<void> {
-    await this._bot.api.sendMessage({
-      chat_id: chatId,
-      text,
-    });
+  async _send(
+    chatId: string,
+    content: Common.AgentMessageContent,
+    messageId?: string,
+  ) {
+    const bot = this._bot;
+
+    if (typeof content === "string") {
+      await sendText(content);
+      return;
+    }
+
+    for (const part of content) {
+      switch (part.type) {
+        case "text":
+          await sendText(part.text);
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    return;
+
+    function sendText(content: string) {
+      return bot.api.sendMessage({
+        chat_id: chatId,
+        text: content,
+        reply_parameters: messageId
+          ? {
+              message_id: parseInt(messageId),
+            }
+          : undefined,
+      });
+    }
+  }
+
+  async send(
+    chatId: string,
+    content: Common.AgentMessageContent,
+  ): Promise<void> {
+    await this._send(chatId, content);
   }
 
   async reply(
     chatId: string,
     messageId: string,
-    content: string,
+    content: Common.AgentMessageContent,
   ): Promise<void> {
-    await this._bot.api.sendMessage({
-      chat_id: chatId,
-      text: content,
-      reply_parameters: {
-        message_id: parseInt(messageId),
-      },
-    });
+    await this._send(chatId, content, messageId);
   }
 
   async setCommands(commands: Common.Command[]): Promise<void> {
