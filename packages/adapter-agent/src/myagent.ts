@@ -1,5 +1,5 @@
 import { createLogger, EventEmitter, type Logger } from "@0x-jerry/utils";
-import type { Agent } from "@my-bot/spec";
+import type { Agent, Common } from "@my-bot/spec";
 import got from "got";
 import {
   parseJsonEventStream,
@@ -68,7 +68,6 @@ export class MyAgentAdapter implements Agent.Adapter {
   async agents(): Promise<Agent.AgentInfo[]> {
     const response = await got.get(`${this._baseUrl}/api/agents`).json<any[]>();
 
-    // Map Docker cagent Agent format to AgentInfo
     return response.map((agent) => ({
       id: agent.id,
       name: agent.name,
@@ -103,7 +102,6 @@ class MyAgentSessionsAdapter implements Agent.SessionsAdapter {
       .get(`${this._baseUrl}/api/sessions`)
       .json<any[]>();
 
-    // Map Docker cagent SessionsResponse array to Session interface
     return (response || []).map((sessionResponse) => ({
       id: sessionResponse.id,
       title: sessionResponse.title || "",
@@ -150,7 +148,7 @@ class MyAgentMessageAdapter implements Agent.MessagesAdapter {
 
   async *send(
     sessionId: string,
-    message: string,
+    message: Common.UserMessageContent,
   ): AsyncIterable<Agent.StreamUIMessage> {
     this.log?.info("send message to session %s: %s", sessionId, message);
 
@@ -187,11 +185,7 @@ class MyAgentMessageAdapter implements Agent.MessagesAdapter {
   }
 
   async delete(sessionId: string, messageId: string): Promise<void> {
-    // The cagent API documentation does not explicitly show an endpoint for deleting individual messages.
-    // This might require further investigation or a different approach.
-    console.warn(
-      `Deleting individual messages is not directly supported by cagent API for session ${sessionId}, message ${messageId}.`,
-    );
+    console.warn(`Not support`);
   }
 
   async getAll(sessionId: string): Promise<Agent.Message[]> {
