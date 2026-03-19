@@ -29,9 +29,17 @@ export async function createTodoToolset(
   const todoWrite = tool({
     description: "Write or update a todo item for the current session",
     inputSchema: z.object({
-      id: z.string().optional().describe("The ID of the todo item to update. If not provided, a new todo item will be created."),
+      id: z
+        .string()
+        .optional()
+        .describe(
+          "The ID of the todo item to update. If not provided, a new todo item will be created.",
+        ),
       content: z.string().describe("The content of the todo item"),
-      status: z.enum(["pending", "completed"]).default("pending").describe("The status of the todo item"),
+      status: z
+        .enum(["pending", "completed"])
+        .default("pending")
+        .describe("The status of the todo item"),
     }),
     execute: async ({ id, content, status }) => {
       if (id) {
@@ -44,6 +52,7 @@ export async function createTodoToolset(
             status,
           },
         });
+
         return `Todo item ${todo.id} updated`;
       } else {
         const todo = await gv.db.sessionTodo.create({
@@ -53,6 +62,7 @@ export async function createTodoToolset(
             status,
           },
         });
+
         return `Todo item ${todo.id} created`;
       }
     },

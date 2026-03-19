@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { gv } from "../../global";
 import type { ModelMessage } from "ai";
-import { upgradeWebSocket } from "hono/bun";
 import { chatWithSession } from "../../sessions/chat";
+import { copyTodos } from "../../database/todo";
 
 export function setupSessionsRoutes(app: Hono) {
   /**
@@ -48,6 +48,36 @@ export function setupSessionsRoutes(app: Hono) {
     if (!session) {
       return c.json({ error: "Session not found" }, 404);
     }
+
+    return c.json(session);
+  });
+
+  /**
+   * Fork the session
+   */
+  app.post("/:id/fork", async (c) => {
+    const id = c.req.param("id");
+    const parentSession = await gv.db.session.findUnique({
+      where: { id },
+    });
+
+    if (!parentSession) {
+      return c.json({ error: "Parent session not found" }, 404);
+    }
+
+    const profile = parentSession.agentProfile;
+
+    if (!gv.config.agents?.[profile]) {
+      return c.json({ error: "Invalid agent profile" }, 400);
+    }
+
+    const session = await gv.db.session.create({
+      data: {
+        agentProfile: profile,
+      },
+    });
+
+    await copyTodos(parentSession.id, session.id);
 
     return c.json(session);
   });
