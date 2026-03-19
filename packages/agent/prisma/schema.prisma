@@ -52,3 +52,13 @@ model SessionCronJob {
   cron   String
   reason String
 }
+
+model SessionTodo {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessionId String
+  content   String
+  status    String   @default("pending")
+}

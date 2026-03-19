@@ -6,6 +6,7 @@ import { createSkillToolset } from "./skill";
 import type { LoadedToolset } from "./types";
 import { createInvokeToolset } from "./invoke";
 import { createEnvToolset } from "./env";
+import { createTodoToolset } from "./todo";
 
 /**
  * Resolve toolset from config.
@@ -60,6 +61,8 @@ async function loadDynamictoolset(
   switch (tool.type) {
     case "invoke":
       return await createInvokeToolset(tool, sessionId);
+    case "todo":
+      return await createTodoToolset(tool, sessionId);
     default:
       return null;
   }
