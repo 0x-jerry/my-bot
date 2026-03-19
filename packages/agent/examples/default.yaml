@@ -28,3 +28,6 @@ mcps:
   web-search:
     remoteType: sse
     remoteUrl: http://search-mcp:3000/sse
+    filterTools:
+      - search
+      - fetchWebContent

@@ -7,14 +7,7 @@ import type { Tool } from "ai";
 export async function createMCPToolset(
   config: ToolSet.Mcp,
 ): Promise<LoadedToolset> {
-  let mcpConfig: ToolSet.McpConfig = config;
-
-  if (config.name) {
-    const topLevelConf = gv.config.mcps?.[config.name];
-    if (topLevelConf) {
-      mcpConfig = topLevelConf;
-    }
-  }
+  const mcpConfig: ToolSet.McpConfig = resolveMcpConfig(config);
 
   const transport = mcpConfig.command
     ? new StdioClientTransport({
@@ -41,7 +34,7 @@ export async function createMCPToolset(
 
   const toolset = await client.tools();
 
-  const filteredToolset = filterToolset(toolset, config.filterTools);
+  const filteredToolset = filterToolset(toolset, mcpConfig.filterTools);
 
   return {
     toolset: filteredToolset,
@@ -49,6 +42,29 @@ export async function createMCPToolset(
       await client.close();
     },
   };
+}
+
+function resolveMcpConfig(config: ToolSet.Mcp) {
+  if (!config.name) {
+    return config;
+  }
+
+  const topLevelConf = gv.config.mcps?.[config.name];
+
+  if (!topLevelConf) {
+    return config;
+  }
+
+  const mcpConfig = structuredClone(topLevelConf);
+
+  mcpConfig.filterTools = [
+    ...new Set([
+      ...(topLevelConf.filterTools || []),
+      ...(config.filterTools || []),
+    ]),
+  ];
+
+  return mcpConfig;
 }
 
 function filterToolset(toolset: Record<string, Tool>, includes?: string[]) {
