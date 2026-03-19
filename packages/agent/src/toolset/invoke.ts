@@ -3,8 +3,8 @@ import type { LoadedToolset, ToolSet } from "./types";
 import z from "zod";
 import { gv } from "../global";
 
-export async function createInvokeToolset(
-  _config: ToolSet.Invoke,
+export async function createCronToolset(
+  _config: ToolSet.Cron,
   sessionId: string,
 ): Promise<LoadedToolset> {
   const addRule = tool({
@@ -46,12 +46,12 @@ export async function createInvokeToolset(
 
   return {
     instruction:
-      "You can add, list, and delete rules to invoke yourself, the message you replied to will send to the user directly." +
-      "So you can use those tool to create some daily schedule tasks or one time tasks.",
+      `You can use "invoke:add-rule", "invoke:list-rules" and "invoke:delete-rule" to invoke yourself.` +
+      "You can use those tools to create some daily schedule tasks or one time tasks.",
     toolset: {
-      "add-invoke-rule": addRule,
-      "list-invoke-rules": listRules,
-      "delete-invoke-rule": deleteRule,
+      "cron:add": addRule,
+      "cron:list": listRules,
+      "cron:delete": deleteRule,
     },
   };
 }

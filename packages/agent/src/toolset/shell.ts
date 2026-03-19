@@ -25,7 +25,7 @@ export async function createShellToolset(
 
   return {
     toolset: {
-      shell,
+      "shell:execute": shell,
     },
   };
 }

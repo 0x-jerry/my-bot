@@ -5,7 +5,7 @@ import { gv } from "../global";
 import { got } from "got";
 
 export async function createMemoryToolset(
-  config: ToolSet.Memory
+  config: ToolSet.Memory,
 ): Promise<LoadedToolset> {
   const executor = createExecutor(config);
 
@@ -51,13 +51,13 @@ export async function createMemoryToolset(
 
   return {
     instruction:
-      `If something is important to remember, use "add-memory" tool to add memory into database. ` +
-      `Always use "list-memories" tool to list recent memories before ask user. ` +
-      `If something is old, search memory from the database.`,
+      `If something is important to remember, use "memory:add" tool to add memory into database. ` +
+      `Always use "memory:list" tool to list recent memories before ask user. ` +
+      `If something is old, use "memory:search" to search memory from the database.`,
     toolset: {
-      "add-memory": addMemory,
-      "search-memory": searchMemory,
-      "list-memories": listMemories,
+      "memory:add": addMemory,
+      "memory:search": searchMemory,
+      "memory:list": listMemories,
     },
   };
 }

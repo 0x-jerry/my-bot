@@ -98,12 +98,24 @@
                     "$ref": "#/definitions/ToolSet.Shell"
                 },
                 {
-                    "$ref": "#/definitions/ToolSet.Invoke"
+                    "$ref": "#/definitions/ToolSet.Cron"
                 },
                 {
                     "$ref": "#/definitions/ToolSet.Env"
+                },
+                {
+                    "$ref": "#/definitions/ToolSet.Todo"
                 }
             ]
+        },
+        "ToolSet.Cron": {
+            "properties": {
+                "type": {
+                    "const": "cron",
+                    "type": "string"
+                }
+            },
+            "type": "object"
         },
         "ToolSet.Env": {
             "properties": {
@@ -117,15 +129,6 @@
         "ToolSet.EnvConfig": {
             "additionalProperties": {
                 "type": "string"
-            },
-            "type": "object"
-        },
-        "ToolSet.Invoke": {
-            "properties": {
-                "type": {
-                    "const": "invoke",
-                    "type": "string"
-                }
             },
             "type": "object"
         },
@@ -243,6 +246,15 @@
             "properties": {
                 "type": {
                     "const": "skill",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ToolSet.Todo": {
+            "properties": {
+                "type": {
+                    "const": "todo",
                     "type": "string"
                 }
             },

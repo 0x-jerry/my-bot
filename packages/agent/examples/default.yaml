@@ -21,7 +21,8 @@ agents:
       - type: skill
       - type: shell
       - type: env
-      - type: invoke
+      - type: cron
+      - type: todo
 
 mcps:
   web-search:

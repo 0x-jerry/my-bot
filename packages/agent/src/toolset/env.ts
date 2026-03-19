@@ -17,7 +17,7 @@ export async function createEnvToolset(
 
   return {
     toolset: {
-      "get-current-time": getCurrentTime,
+      "env:get-current-time": getCurrentTime,
     },
   };
 }

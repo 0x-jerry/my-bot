@@ -60,11 +60,11 @@ export async function createTodoToolset(
 
   return {
     instruction:
-      "Use 'todoread' to see the current tasks for this session, and 'todowrite' to add or update tasks. " +
+      "Use 'todo:read' to see the current tasks for this session, and 'todo:write' to add or update tasks. " +
       "This helps you keep track of progress and what needs to be done next.",
     toolset: {
-      "todoread": todoRead,
-      "todowrite": todoWrite,
+      "todo:read": todoRead,
+      "todo:write": todoWrite,
     },
   };
 }

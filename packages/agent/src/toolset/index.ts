@@ -4,7 +4,7 @@ import { createMCPToolset } from "./mcp";
 import { createShellToolset } from "./shell";
 import { createSkillToolset } from "./skill";
 import type { LoadedToolset } from "./types";
-import { createInvokeToolset } from "./invoke";
+import { createCronToolset } from "./invoke";
 import { createEnvToolset } from "./env";
 import { createTodoToolset } from "./todo";
 
@@ -59,8 +59,8 @@ async function loadDynamictoolset(
   sessionId: string,
 ): Promise<LoadedToolset | null> {
   switch (tool.type) {
-    case "invoke":
-      return await createInvokeToolset(tool, sessionId);
+    case "cron":
+      return await createCronToolset(tool, sessionId);
     case "todo":
       return await createTodoToolset(tool, sessionId);
     default:
