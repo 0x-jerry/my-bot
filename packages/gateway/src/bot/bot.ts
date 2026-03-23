@@ -128,26 +128,7 @@ export class Bot {
 
       const stream = this.agent.messages.send(sessionId, evt.content);
 
-      let responseText = "";
-
-      for await (const chunk of stream) {
-        switch (chunk.type) {
-          case "text-start":
-            responseText = "";
-            break;
-
-          case "text-delta":
-            responseText += chunk.delta;
-            break;
-
-          case "finish":
-            await evt.send(responseText || "No response received.");
-            break;
-
-          default:
-            break;
-        }
-      }
+      await evt.send(stream)
     } catch (error) {
       await evt.send(
         `Sorry, I encountered an error processing your message: ${String(error)}`,

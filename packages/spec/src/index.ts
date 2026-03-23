@@ -88,7 +88,7 @@ export namespace Agent {
     /**
      * Send messages to the agent in a session and get a stream of events.
      */
-    send(sessionId: string, message: Common.UserMessageContent): AsyncIterable<StreamUIMessage>;
+    send(sessionId: string, message: Common.UserMessageContent): Common.AsyncStreamUIMessageChunks;
 
     /**
      * Interrupt message processing
@@ -141,9 +141,13 @@ export namespace Common {
   export type UserMessageContent = UserContent;
 
   export type AgentMessageContent = AssistantContent;
+
+  export type AsyncStreamUIMessageChunks = AsyncIterable<UIMessageChunk>;
 }
 
 export namespace IM {
+  export type MessageContent = Common.AgentMessageContent | Common.AsyncStreamUIMessageChunks;
+
   /**
    * IM Adapter Interface
    */
@@ -163,16 +167,12 @@ export namespace IM {
     /**
      * Send a message to a chat.
      */
-    send(chatId: string, content: Common.AgentMessageContent): Promise<void>;
+    send(chatId: string, content: MessageContent): Promise<void>;
 
     /**
      * Reply to a message in a chat.
      */
-    reply(
-      chatId: string,
-      messageId: string,
-      content: Common.AgentMessageContent,
-    ): Promise<void>;
+    reply(chatId: string, messageId: string, content: MessageContent): Promise<void>;
 
     /**
      * Set the commands for the bot.
@@ -195,13 +195,13 @@ export namespace IM {
     message: [event: MessageEvent];
   }
 
-  export interface EventBase {
+  interface EventBase {
     userId: string;
     chatId: string;
     messageId: string;
 
-    send(content: Common.AgentMessageContent): Promise<void>;
-    reply(content: Common.AgentMessageContent): Promise<void>;
+    send(content: MessageContent): Promise<void>;
+    reply(content: MessageContent): Promise<void>;
   }
 
   export interface MessageEvent extends EventBase {

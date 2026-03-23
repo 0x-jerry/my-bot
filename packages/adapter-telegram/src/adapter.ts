@@ -1,4 +1,4 @@
-import { createLogger, EventEmitter, type Logger } from "@0x-jerry/utils";
+import { createLogger, EventEmitter, isAsyncIterable, type Logger } from "@0x-jerry/utils";
 import type { Common, IM } from "@my-bot/spec";
 import { name as pkgName } from "../package.json";
 import { Bot, webhookHandler } from "gramio";
@@ -40,11 +40,7 @@ export class TelegramAdapter implements IM.Adapter {
             return this.send(ctx.chatId.toString(), content);
           },
           reply: async (content) => {
-            return this.reply(
-              ctx.chatId.toString(),
-              ctx.id.toString(),
-              content,
-            );
+            return this.reply(ctx.chatId.toString(), ctx.id.toString(), content);
           },
         };
 
@@ -82,12 +78,33 @@ export class TelegramAdapter implements IM.Adapter {
     console.log("telegram bot stopped");
   }
 
-  async _send(
-    chatId: string,
-    content: Common.AgentMessageContent,
-    messageId?: string,
-  ) {
+  async _send(chatId: string, content: IM.MessageContent, messageId?: string) {
     const bot = this._bot;
+
+    if (isAsyncIterable(content)) {
+      let responseText = "";
+
+      for await (const chunk of content) {
+        switch (chunk.type) {
+          case "text-start":
+            responseText = "";
+            break;
+
+          case "text-delta":
+            responseText += chunk.delta;
+            break;
+
+          case "finish":
+            await sendText(responseText || "No response received.");
+            break;
+
+          default:
+            break;
+        }
+      }
+
+      return;
+    }
 
     if (typeof content === "string") {
       await sendText(content);
@@ -140,18 +157,11 @@ export class TelegramAdapter implements IM.Adapter {
     }
   }
 
-  async send(
-    chatId: string,
-    content: Common.AgentMessageContent,
-  ): Promise<void> {
+  async send(chatId: string, content: IM.MessageContent): Promise<void> {
     await this._send(chatId, content);
   }
 
-  async reply(
-    chatId: string,
-    messageId: string,
-    content: Common.AgentMessageContent,
-  ): Promise<void> {
+  async reply(chatId: string, messageId: string, content: IM.MessageContent): Promise<void> {
     await this._send(chatId, content, messageId);
   }
 
