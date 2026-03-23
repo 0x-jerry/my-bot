@@ -1,9 +1,4 @@
-import { loadEnvFile } from "node:process";
-import { setupProxyAgent } from "./utils";
 import { TelegramAdapter } from "./adapter";
-
-loadEnvFile();
-setupProxyAgent();
 
 const telegramAdapter = new TelegramAdapter({
   token: process.env.TELEGRAM_BOT_TOKEN!,
