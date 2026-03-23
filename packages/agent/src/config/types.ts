@@ -118,6 +118,14 @@ export namespace ToolSet {
 
   export interface Shell {
     type: "shell";
+
+    /**
+     * This require rtk(https://github.com/rtk-ai/rtk) installed first, default is auto
+     *
+     * - "auto": rewrite if rtk installed
+     * - "off": disable the rewrite
+     */
+    rtkRewrite?: "auto" | "off"
   }
 
   export interface Env {

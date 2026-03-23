@@ -20,6 +20,7 @@ agents:
       - type: memory
       - type: skill
       - type: shell
+        rtkRewrite: auto
       - type: env
       - type: cron
       - type: todo

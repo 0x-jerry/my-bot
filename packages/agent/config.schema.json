@@ -247,6 +247,14 @@
         },
         "ToolSet.Shell": {
             "properties": {
+                "rtkRewrite": {
+                    "description": "This require rtk(https://github.com/rtk-ai/rtk) installed first, default is auto\n\n- \"auto\": rewrite if rtk installed\n- \"off\": disable the rewrite",
+                    "enum": [
+                        "auto",
+                        "off"
+                    ],
+                    "type": "string"
+                },
                 "type": {
                     "const": "shell",
                     "type": "string"
