@@ -151,15 +151,16 @@ export async function createFilesystemToolset(
         const fileLimit = limit || 100;
 
         const fileDetails = files.map(
-          (file) => `${file.isDirectory() ? "Directory" : "File"} ${file.name}`,
+          (file) => `${file.isDirectory() ? "D" : "F"} ${file.name}`,
         );
 
+        const legend = "(D = Directory, F = File)\n\n";
         if (files.length > fileLimit) {
           const truncatedFiles = fileDetails.slice(0, fileLimit);
-          return `(Showing ${fileLimit} of ${files.length} files)\n\n${truncatedFiles.join("\n")}`;
+          return `${legend}(Showing ${fileLimit} of ${files.length} files)\n\n${truncatedFiles.join("\n")}`;
         }
 
-        return fileDetails.join("\n");
+        return `${legend}${fileDetails.join("\n")}`;
       } catch (error: any) {
         return `Error reading directory: ${error.message}`;
       }
