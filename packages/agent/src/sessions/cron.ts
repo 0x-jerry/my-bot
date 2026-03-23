@@ -88,18 +88,12 @@ export class SessionCronJobManager {
       },
     });
 
-    const streamResult = await chatWithSession(
-      newSession.id,
-      [
-        {
-          role: "system",
-          content: `You are invoked by a cron job created by yourself. The reason is: ${job.config.reason}`,
-        },
-      ],
+    const streamResult = await chatWithSession(newSession.id, [
       {
-        saveMessages: true,
+        role: "system",
+        content: `You are invoked by a cron job created by yourself. The reason is: ${job.config.reason}`,
       },
-    );
+    ]);
 
     const resp = await streamResult.response;
     const lastMsgContent = resp.messages.at(-1)?.content;

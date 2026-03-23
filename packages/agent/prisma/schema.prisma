@@ -60,5 +60,19 @@ model SessionTodo {
 
   sessionId String
   content   String
-  status    String   @default("pending")
+
+  // pending or completed
+  status    String @default("pending")
+}
+
+model SessionUsage {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessionId String
+
+  inputTokens  Int
+  outputTokens Int
+  totalTokens  Int
 }

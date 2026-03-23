@@ -1,18 +1,13 @@
 import type { ModelMessage } from "ai";
-import { saveModelMessages } from "../database/session";
+import { saveModelMessages, saveSessionUsage } from "../database/session";
 import { gv } from "../global";
 
-export interface ChatWithSessionOptions {
-  /**
-   * Whether to save the input and output messages to the database.
-   */
-  saveMessages: boolean;
-}
+export interface ChatWithSessionOptions {}
 
 export async function chatWithSession(
   sessionId: string,
   inputMessages: ModelMessage[],
-  opt?: ChatWithSessionOptions,
+  _opt?: ChatWithSessionOptions,
 ) {
   const session = await gv.db.session.findUnique({
     where: { id: sessionId },
@@ -36,16 +31,15 @@ export async function chatWithSession(
   if (inputMessages.length) {
     messages.push(...inputMessages);
 
-    if (opt?.saveMessages) {
-      await saveModelMessages(inputMessages, sessionId);
-    }
+    await saveModelMessages(sessionId, inputMessages);
   }
 
   const streamResult = await agent.runChatLoop(messages, sessionId, {
     onFinish: async (output) => {
-      if (opt?.saveMessages) {
-        await saveModelMessages(output.response.messages, sessionId);
-      }
+      await Promise.all([
+        saveModelMessages(sessionId, output.response.messages),
+        saveSessionUsage(sessionId, output.usage),
+      ]);
     },
   });
 

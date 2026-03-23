@@ -49,7 +49,30 @@ export function setupSessionsRoutes(app: Hono) {
       return c.json({ error: "Session not found" }, 404);
     }
 
-    return c.json(session);
+    const usages = await gv.db.sessionUsage.findMany({
+      where: {
+        sessionId: session.id,
+      },
+    });
+
+    const totalUsage = {
+      inputTokens: 0,
+      outputTokens: 0,
+      totalTokens: 0,
+    };
+
+    for (const usage of usages) {
+      totalUsage.inputTokens += usage.inputTokens;
+      totalUsage.outputTokens += usage.outputTokens;
+      totalUsage.totalTokens += usage.totalTokens;
+    }
+
+    const sessionWithUsage = {
+      ...session,
+      usage: totalUsage,
+    };
+
+    return c.json(sessionWithUsage);
   });
 
   /**
@@ -123,9 +146,7 @@ export function setupSessionsRoutes(app: Hono) {
 
     const userMessages = await c.req.json<ModelMessage[]>();
 
-    const streamResult = await chatWithSession(sessionId, userMessages, {
-      saveMessages: true,
-    });
+    const streamResult = await chatWithSession(sessionId, userMessages);
 
     const resp = streamResult.toUIMessageStreamResponse();
 
