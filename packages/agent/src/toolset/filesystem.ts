@@ -9,7 +9,7 @@ import {
   mkdir,
   unlink,
 } from "node:fs/promises";
-import { dirname, isAbsolute } from "node:path";
+import { dirname, isAbsolute, join } from "node:path";
 import { applyPatches } from "diff";
 
 const MAX_READ_LENGTH = 5000;
@@ -72,18 +72,19 @@ export async function createFilesystemToolset(
   const patchTool = tool({
     description: "Patch one or more files using unified diff format.",
     inputSchema: z.object({
+      workdir: z.string().describe("The working directory for the patch."),
       patch: z.string().describe("The unified diff patch to apply."),
     }),
-    execute: async ({ patch }) => {
+    execute: async ({ workdir, patch }) => {
+      if (!isAbsolute(workdir)) {
+        return `Error: workdir must be an absolute path: ${workdir}`;
+      }
+
       return new Promise<string>((resolve) => {
         const results: string[] = [];
         applyPatches(patch, {
           loadFile: async (patchObj, callback) => {
-            const path = patchObj.oldFileName;
-
-            if (!isAbsolute(path)) {
-              return callback(new Error(`Path "${path}" is not absolute`), "");
-            }
+            const path = join(workdir, patchObj.oldFileName);
 
             try {
               const content = await readFile(path, "utf-8");
@@ -93,16 +94,8 @@ export async function createFilesystemToolset(
             }
           },
           patched: async (patchObj, content, callback) => {
-            const oldPath = patchObj.oldFileName;
-            const newPath = patchObj.newFileName;
-
-            if (!isAbsolute(newPath)) {
-              return callback(new Error(`Path "${newPath}" is not absolute`));
-            }
-
-            if (!isAbsolute(oldPath)) {
-              return callback(new Error(`Path "${oldPath}" is not absolute`));
-            }
+            const oldPath = join(workdir, patchObj.oldFileName);
+            const newPath = join(workdir, patchObj.newFileName);
 
             if (content === false) {
               results.push(`Failed to patch ${newPath}`);
@@ -195,7 +188,8 @@ export async function createFilesystemToolset(
   return {
     instruction:
       "All the following tools should use absolute path:\n" +
-      `"fs:read", "fs:write", "fs:patch", "fs:readDirectory": "fs:move"`,
+      `"fs:read", "fs:write", "fs:readDirectory": "fs:move"\n\n` +
+      `"fs:patch" should provide a workdir and the patch content should use relative path`,
     toolset: {
       "fs:read": readFileTool,
       "fs:write": writeFileTool,
