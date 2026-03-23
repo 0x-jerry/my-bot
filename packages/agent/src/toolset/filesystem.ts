@@ -1,14 +1,7 @@
 import { tool } from "ai";
 import type { LoadedToolset, ToolSet } from "./types";
 import z from "zod";
-import {
-  readFile,
-  writeFile,
-  readdir,
-  rename,
-  mkdir,
-  unlink,
-} from "node:fs/promises";
+import { readFile, writeFile, rename, mkdir, unlink } from "node:fs/promises";
 import { dirname, isAbsolute, join } from "node:path";
 import { applyPatches } from "diff";
 
@@ -132,41 +125,6 @@ export async function createFilesystemToolset(
     },
   });
 
-  const readDirectoryTool = tool({
-    description: "Read a directory",
-    inputSchema: z.object({
-      path: z.string().describe("The path to the directory to read"),
-      limit: z
-        .number()
-        .optional()
-        .default(100)
-        .describe("The maximum number of files to return"),
-    }),
-    execute: async ({ path, limit }) => {
-      if (!isAbsolute(path)) {
-        return "Error: Please provide an absolute path.";
-      }
-      try {
-        const files = await readdir(path, { withFileTypes: true });
-        const fileLimit = limit || 100;
-
-        const fileDetails = files.map(
-          (file) => `${file.isDirectory() ? "D" : "F"} ${file.name}`,
-        );
-
-        const legend = "(D = Directory, F = File)\n\n";
-        if (files.length > fileLimit) {
-          const truncatedFiles = fileDetails.slice(0, fileLimit);
-          return `${legend}(Showing ${fileLimit} of ${files.length} files)\n\n${truncatedFiles.join("\n")}`;
-        }
-
-        return `${legend}${fileDetails.join("\n")}`;
-      } catch (error: any) {
-        return `Error reading directory: ${error.message}`;
-      }
-    },
-  });
-
   const moveTool = tool({
     description: "Move a file or directory",
     inputSchema: z.object({
@@ -195,7 +153,6 @@ export async function createFilesystemToolset(
       "fs:read": readFileTool,
       "fs:write": writeFileTool,
       "fs:patch": patchTool,
-      "fs:readDirectory": readDirectoryTool,
       "fs:move": moveTool,
     },
   };
