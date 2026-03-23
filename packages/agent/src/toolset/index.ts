@@ -7,6 +7,7 @@ import type { LoadedToolset } from "./types";
 import { createCronToolset } from "./invoke";
 import { createEnvToolset } from "./env";
 import { createTodoToolset } from "./todo";
+import { createFilesystemToolset } from "./filesystem";
 
 /**
  * Resolve toolset from config.
@@ -82,6 +83,8 @@ async function loadSaticToolset(
       return await createSkillToolset(tool);
     case "env":
       return await createEnvToolset(tool);
+    case "filesystem":
+      return await createFilesystemToolset(tool);
     default:
       return null;
   }

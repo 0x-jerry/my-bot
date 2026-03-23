@@ -23,6 +23,7 @@ agents:
       - type: env
       - type: cron
       - type: todo
+      - type: filesystem
 
 mcps:
   web-search:

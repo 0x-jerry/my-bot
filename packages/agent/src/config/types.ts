@@ -75,7 +75,7 @@ export namespace Config {
 }
 
 export namespace ToolSet {
-  export type All = Mcp | Skill | Memory | Shell | Cron | Env | Todo;
+  export type All = Mcp | Skill | Memory | Shell | Cron | Env | Todo | FileSystem;
 
   export interface Mcp extends McpConfig {
     type: "mcp";
@@ -130,5 +130,9 @@ export namespace ToolSet {
 
   export interface Todo {
     type: "todo";
+  }
+
+  export interface FileSystem {
+    type: "filesystem";
   }
 }

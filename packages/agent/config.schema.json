@@ -105,6 +105,9 @@
                 },
                 {
                     "$ref": "#/definitions/ToolSet.Todo"
+                },
+                {
+                    "$ref": "#/definitions/ToolSet.FileSystem"
                 }
             ]
         },
@@ -129,6 +132,15 @@
         "ToolSet.EnvConfig": {
             "additionalProperties": {
                 "type": "string"
+            },
+            "type": "object"
+        },
+        "ToolSet.FileSystem": {
+            "properties": {
+                "type": {
+                    "const": "filesystem",
+                    "type": "string"
+                }
             },
             "type": "object"
         },
