@@ -48,7 +48,7 @@ function createInstruction(skills: Record<string, LoadedSkill>) {
     return `- ${skill.name}: ${skill.description}`;
   });
 
-  return `You can use the "skill:read" tool to read a skill deatil. Avaible skills are:\n${skillDescription.join("\n")}`;
+  return `You can use the "skill:read" tool to read a skill detail. Available skills are:\n${skillDescription.join("\n")}`;
 }
 
 async function loadSkills(cwd: string) {
