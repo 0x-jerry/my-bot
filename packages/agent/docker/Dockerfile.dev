@@ -1,0 +1,21 @@
+FROM debian:trixie-slim
+
+RUN apt-get update
+RUN apt-get install curl unzip -y
+
+# installed to ~/.local/bin/rtk
+RUN curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
+
+# installed to ~/.bun/bin/bun and ~/.bun/bin/bunx
+RUN curl -fsSL https://bun.com/install | bash
+
+RUN mv ~/.local/bin/rtk /usr/local/bin/rtk && \
+  mv ~/.bun/bin/bun /usr/local/bin/bun && \
+  mv ~/.bun/bin/bunx /usr/local/bin/bunx && \
+  ln -s /usr/local/bin/bun /usr/local/bin/node
+
+# Ensure `bun install -g` works
+ARG BUN_INSTALL_BIN=/usr/local/bin
+ENV BUN_INSTALL_BIN=${BUN_INSTALL_BIN}
+
+COPY data /root/

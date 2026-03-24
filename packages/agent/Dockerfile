@@ -1,4 +1,6 @@
-FROM oven/bun:1-debian
+ARG BASE_IMAGE_NAME="my-agent:base"
+
+FROM ${BASE_IMAGE_NAME}
 
 ENV NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
 
