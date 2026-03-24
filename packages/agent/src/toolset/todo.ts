@@ -70,8 +70,9 @@ export async function createTodoToolset(
 
   return {
     instruction:
-      "Use 'todo:read' to see the current tasks for this session, and 'todo:write' to add or update tasks. " +
-      "This helps you keep track of progress and what needs to be done next.",
+      `Only use the following tools when you need to solve a complex task, those tools can help you to track the progress and what needs to be done:\n` +
+      `Use 'todo:read' to see what needs to be done for this session, use 'todo:write' to add or update the progress. ` +
+      `You must confirm all todos are completed before reply to the user`,
     toolset: {
       "todo:read": todoRead,
       "todo:write": todoWrite,

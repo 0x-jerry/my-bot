@@ -46,8 +46,8 @@ export async function createCronToolset(
 
   return {
     instruction:
-      `You can use "invoke:add-rule", "invoke:list-rules" and "invoke:delete-rule" to invoke yourself.` +
-      "You can use those tools to create some daily schedule tasks or one time tasks.",
+      `If you need to schedule some task in the future, you can use the following tools to manage those tasks:\n` +
+      `"cron:add", "cron:list" and "cron:delete".`,
     toolset: {
       "cron:add": addRule,
       "cron:list": listRules,

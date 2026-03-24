@@ -1,8 +1,6 @@
 services:
   agent:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: my-agent:latest
     env_file:
       - .compose-dev.env
     environment:
@@ -13,9 +11,9 @@ services:
     ports:
       - 10080:8080
 
-  search-mcp:
-    image: ghcr.io/aas-ee/open-web-search:v1.2.5
-    environment:
-      MODE: http
-    expose:
-      - 3000
+  # search-mcp:
+  #   image: ghcr.io/aas-ee/open-web-search:v1.2.5
+  #   environment:
+  #     MODE: http
+  #   expose:
+  #     - 3000

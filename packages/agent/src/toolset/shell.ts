@@ -3,9 +3,7 @@ import type { LoadedToolset, ToolSet } from "./types";
 import z from "zod";
 import { exec } from "@0x-jerry/utils/node";
 
-export async function createShellToolset(
-  config: ToolSet.Shell,
-): Promise<LoadedToolset> {
+export async function createShellToolset(config: ToolSet.Shell): Promise<LoadedToolset> {
   const shell = tool({
     title: "Shell",
     description: "Run shell commands",
@@ -40,13 +38,18 @@ async function rtkRewrite(config: ToolSet.Shell, command: string) {
     return command;
   }
 
-  const rewritedCommand = await exec(`rtk rewrite ${JSON.stringify(command)}`, {
-    collectOutput: true,
-  });
+  try {
+    const rewriteCommand = await exec(`rtk rewrite ${command}`, {
+      collectOutput: true,
+    });
 
-  if (!rewritedCommand) {
+    if (!rewriteCommand) {
+      return command;
+    }
+
+    return rewriteCommand;
+  } catch (error) {
+    console.log("rtk rewrite failed:", error);
     return command;
   }
-
-  return rewritedCommand;
 }

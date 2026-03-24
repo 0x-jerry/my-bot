@@ -9,7 +9,7 @@ provider:
 
 agents:
   root:
-    model: ollama/qwen3.5:0.8b
+    model: ollama/qwen3.5:2b
     # model: dashscope/qwen3.5-35b-a3b
     instruction: You are a helpful assistant!
     context:

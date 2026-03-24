@@ -4,7 +4,7 @@ import { createMCPToolset } from "./mcp";
 import { createShellToolset } from "./shell";
 import { createSkillToolset } from "./skill";
 import type { LoadedToolset } from "./types";
-import { createCronToolset } from "./invoke";
+import { createCronToolset } from "./cron";
 import { createEnvToolset } from "./env";
 import { createTodoToolset } from "./todo";
 import { createFilesystemToolset } from "./filesystem";
@@ -43,7 +43,7 @@ export async function loadDynamicToolsets(
 
   for (const toolsetConfig of toolsetsConfig) {
     try {
-      const toolset = await loadDynamictoolset(toolsetConfig, sessionId);
+      const toolset = await loadDynamicToolset(toolsetConfig, sessionId);
       if (!toolset) continue;
 
       loadedToolset.push(toolset);
@@ -55,7 +55,7 @@ export async function loadDynamicToolsets(
   return loadedToolset;
 }
 
-async function loadDynamictoolset(
+async function loadDynamicToolset(
   tool: Config.ToolsetConfig,
   sessionId: string,
 ): Promise<LoadedToolset | null> {

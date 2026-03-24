@@ -11,9 +11,9 @@ const sessionId = session.id;
 
 console.log("Session created with ID:", sessionId);
 
-await oneTurn("删除所有任务");
+// await oneTurn("删除所有任务");
 
-await oneTurn("明天早上8点告诉过当天的天气情况");
+// await oneTurn("明天早上8点告诉过当天的天气情况");
 
 async function oneTurn(msg: string) {
   const resp = agent.messages.send(sessionId, msg);
@@ -48,7 +48,9 @@ async function oneTurn(msg: string) {
       case "tool-input-delta":
         process.stdout.write(pc.cyan(chunk.inputTextDelta));
         break;
-
+      case "tool-output-error":
+        console.log("Tool error:", pc.red(chunk.errorText));
+        break;
       case "tool-output-available":
         console.log("Tool output:", chunk.output);
         break;
@@ -57,4 +59,11 @@ async function oneTurn(msg: string) {
         break;
     }
   }
+}
+
+for await (const line of console) {
+  console.log("Assistant:");
+
+  await oneTurn(line);
+  console.log();
 }

@@ -1,5 +1,5 @@
 import type { SessionCronJobModel } from "../generated/prisma/models";
-import { Cron } from "croner";
+import { Cron, CronPattern } from "croner";
 import { gv } from "../global";
 import { chatWithSession } from "./chat";
 
@@ -41,6 +41,9 @@ export class SessionCronJobManager {
     if (exist) {
       return exist;
     }
+
+    // Check cron pattern, failed will throw an error
+    new CronPattern(cron);
 
     const job = await gv.db.sessionCronJob.create({
       data: {
