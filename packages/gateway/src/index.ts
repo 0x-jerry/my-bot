@@ -3,14 +3,14 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { setupMCP } from "./mcp";
 import { setupBot } from "./bot";
-import { setupOpenAIChatProxyRoutes } from "./routes/chat";
+import { setupProviderRoutes } from "./routes/provider";
 
 const app = new Hono();
 setupMCP(app);
 
 const bot = setupBot(app);
 
-setupOpenAIChatProxyRoutes(app);
+setupProviderRoutes(app);
 
 const server = serve(
   {
