@@ -2,12 +2,9 @@ import { tool } from "ai";
 import type { LoadedToolset, ToolSet } from "./types";
 import z from "zod";
 import { gv } from "../global";
-import { got } from "got";
 
-export async function createMemoryToolset(
-  config: ToolSet.Memory,
-): Promise<LoadedToolset> {
-  const executor = createExecutor(config);
+export async function createMemoryToolset(_config: ToolSet.Memory): Promise<LoadedToolset> {
+  const executor = new PrismaMemoryExecutor();
 
   const addMemory = tool({
     title: "Add memory",
@@ -25,10 +22,7 @@ export async function createMemoryToolset(
     description: "Search memory from database",
     inputSchema: z.object({
       query: z.string().describe("The query to search memory."),
-      limit: z
-        .number()
-        .describe("The number of recent memories to list.")
-        .default(10),
+      limit: z.number().describe("The number of recent memories to list.").default(10),
     }),
     execute: async (input) => {
       return await executor.search(input.query, { limit: input.limit });
@@ -39,10 +33,7 @@ export async function createMemoryToolset(
     title: "List memories",
     description: "List recent memories in database, default is 20 memories.",
     inputSchema: z.object({
-      limit: z
-        .number()
-        .describe("The number of recent memories to list.")
-        .default(20),
+      limit: z.number().describe("The number of recent memories to list.").default(20),
     }),
     execute: async (input) => {
       return await executor.list({ limit: input.limit });
@@ -74,14 +65,6 @@ interface MemoryExecutor {
   search: (keyword: string, opt: { limit: number }) => Promise<MemoryItem[]>;
 }
 
-function createExecutor(config: ToolSet.Memory): MemoryExecutor {
-  if (config.remoteUrl) {
-    return new RemoteMemoryExecutor(config.remoteUrl);
-  }
-
-  return new PrismaMemoryExecutor();
-}
-
 class PrismaMemoryExecutor implements MemoryExecutor {
   async list(opt: { limit: number }): Promise<MemoryItem[]> {
     return await gv.db.memory.findMany({
@@ -107,51 +90,5 @@ class PrismaMemoryExecutor implements MemoryExecutor {
       },
       take: opt.limit,
     });
-  }
-}
-
-class RemoteMemoryExecutor implements MemoryExecutor {
-  constructor(private remoteUrl: string) {}
-
-  async list(opt: { limit: number }): Promise<MemoryItem[]> {
-    const url = `${this.remoteUrl}/list`;
-
-    const response = await got
-      .get(url, {
-        searchParams: {
-          limit: opt.limit,
-        },
-      })
-      .json<MemoryItem[]>();
-
-    return response;
-  }
-
-  async add(memory: string): Promise<MemoryItem> {
-    const url = `${this.remoteUrl}/add`;
-    const response = await got
-      .post(url, {
-        json: {
-          memory: memory,
-        },
-      })
-      .json<MemoryItem>();
-
-    return response;
-  }
-
-  async search(keyword: string, opt: { limit: number }): Promise<MemoryItem[]> {
-    const url = `${this.remoteUrl}/search`;
-
-    const response = await got
-      .get(url, {
-        searchParams: {
-          q: keyword,
-          limit: opt.limit,
-        },
-      })
-      .json<MemoryItem[]>();
-
-    return response;
   }
 }

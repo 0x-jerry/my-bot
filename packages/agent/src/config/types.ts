@@ -110,10 +110,6 @@ export namespace ToolSet {
 
   export interface Memory {
     type: "memory";
-    /**
-     * The URL of the memory server.
-     */
-    remoteUrl?: string;
   }
 
   export interface Shell {
