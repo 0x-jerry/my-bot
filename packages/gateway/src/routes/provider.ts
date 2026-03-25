@@ -104,8 +104,12 @@ export function setupProviderRoutes(app: Hono) {
       return c.json({ error: `Provider ${name} not found` }, 404);
     }
 
-    const destUrl = new URL(path, provider.baseURL);
-    const headers = new Headers(c.req.raw.headers);
+    const normalizedBaseURL = provider.baseURL.endsWith("/")
+      ? provider.baseURL
+      : provider.baseURL + "/";
+
+    const destUrl = new URL(path, normalizedBaseURL);
+    const headers = new Headers();
 
     switch (provider.type) {
       case "openai-compatible":
@@ -113,10 +117,7 @@ export function setupProviderRoutes(app: Hono) {
         break;
 
       default:
-        return c.json(
-          { error: `Provider type ${provider.type} not support` },
-          400,
-        );
+        return c.json({ error: `Provider type ${provider.type} not support` }, 400);
     }
 
     return proxy(destUrl, {
