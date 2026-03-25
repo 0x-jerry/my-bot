@@ -11,15 +11,8 @@ datasource db {
   provider = "sqlite"
 }
 
-model Memory {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-
-  memory String
-}
-
 model BotSession {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -28,4 +21,16 @@ model BotSession {
   chatId    String
 
   @@unique([bot, chatId])
+}
+
+model ProviderConfig {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name    String @unique
+  // only open-compatible support for now
+  type    String
+  baseURL String
+  apiKey  String
 }

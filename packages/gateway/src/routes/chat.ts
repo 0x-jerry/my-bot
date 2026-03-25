@@ -1,29 +1,39 @@
 import { Hono } from "hono";
 import { proxy } from "hono/proxy";
+import { getDatabaseClient } from "../database";
 
 export function setupOpenAIChatProxyRoutes(app: Hono) {
-  const prefix = "/openai/v1";
-  app.basePath(prefix).all("*", (c) => {
-    const url = new URL(c.req.url);
-    const config = {
-      endpoint: process.env.OPENAI_API_ENDPOINT!,
-      apiKey: process.env.OPENAI_API_KEY!,
-    };
+  app.all("/provider/:name/:path{.+}", async (c) => {
+    const name = c.req.param("name");
+    const path = c.req.param("path");
 
-    const target = new URL(config.endpoint);
+    const db = getDatabaseClient();
 
-    // Combine the target's base URL (origin + pathname) with the request's pathname and search.
-    // We remove the trailing slash from the target pathname if it exists to avoid double slashes.
-    const targetBase = target.origin + target.pathname.replace(/\/$/, "");
-    const pathname = url.pathname.replace(prefix, "");
-    const destUrl = targetBase + pathname + url.search;
+    const provider = await db.providerConfig.findUnique({
+      where: {
+        name,
+      },
+    });
 
-    // Override the Authorization header with the configured API key
-    const headers = new Headers(c.req.raw.headers);
-    if (config.apiKey) {
-      headers.set("Authorization", `Bearer ${config.apiKey}`);
+    if (!provider) {
+      return c.json({ error: `Provider ${name} not found` }, 404);
     }
 
-    return proxy(destUrl, { headers });
+    const destUrl = new URL(path, provider.baseURL);
+    const headers = new Headers(c.req.raw.headers);
+
+    switch (provider.type) {
+      case "openai-compatible":
+        headers.set("Authorization", `Bearer ${provider.apiKey}`);
+        break;
+
+      default:
+        return c.json({ error: `Provider type ${provider.type} not support` }, 400);
+    }
+
+    return proxy(destUrl, {
+      ...c.req,
+      headers: headers,
+    });
   });
 }
