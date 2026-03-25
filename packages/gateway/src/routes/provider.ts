@@ -71,6 +71,25 @@ export function setupProviderRoutes(app: Hono) {
     }
   });
 
+  app.delete("/provider/:name", async (c) => {
+    const name = c.req.param("name");
+
+    try {
+      await db.providerConfig.delete({
+        where: { name },
+      });
+      return c.json({ message: `Provider ${name} deleted` });
+    } catch (e: any) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === "P2025") {
+          return c.json({ error: `Provider ${name} not found` }, 404);
+        }
+      }
+
+      return c.json({ error: String(e) }, 500);
+    }
+  });
+
   app.all("/provider/:name/:path{.+}", async (c) => {
     const name = c.req.param("name");
     const path = c.req.param("path");
