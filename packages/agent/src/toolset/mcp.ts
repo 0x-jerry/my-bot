@@ -1,15 +1,13 @@
 import type { LoadedToolset, ToolSet } from "./types";
-import { createMCPClient } from "@ai-sdk/mcp";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { createMCPClient, type MCPClientConfig } from "@ai-sdk/mcp";
+import { StdioClientTransport } from "@modelcontextprotocol/client";
 import { gv } from "../global";
 import type { Tool } from "ai";
 
-export async function createMCPToolset(
-  config: ToolSet.Mcp,
-): Promise<LoadedToolset> {
+export async function createMCPToolset(config: ToolSet.Mcp): Promise<LoadedToolset> {
   const mcpConfig: ToolSet.McpConfig = resolveMcpConfig(config);
 
-  const transport = mcpConfig.command
+  const transport: MCPClientConfig["transport"] | undefined = mcpConfig.command
     ? new StdioClientTransport({
         command: mcpConfig.command,
         args: mcpConfig.args,
@@ -58,10 +56,7 @@ function resolveMcpConfig(config: ToolSet.Mcp) {
   const mcpConfig = structuredClone(topLevelConf);
 
   mcpConfig.filterTools = [
-    ...new Set([
-      ...(topLevelConf.filterTools || []),
-      ...(config.filterTools || []),
-    ]),
+    ...new Set([...(topLevelConf.filterTools || []), ...(config.filterTools || [])]),
   ];
 
   return mcpConfig;

@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/server";
 import { StreamableHTTPTransport } from "@hono/mcp";
 import type { ToolDefinition } from "./utils";
 import { memoryTools } from "./memory";
