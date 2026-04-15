@@ -1,13 +1,15 @@
-import type { ModelMessage } from "ai";
+import type { LanguageModelUsage, ModelMessage, StreamTextResult } from "ai";
 import { saveModelMessages, saveSessionUsage } from "../database/session";
 import { gv } from "../global";
 
-export interface ChatWithSessionOptions {}
+export interface ChatWithSessionOptions {
+  abortSignal?: AbortSignal;
+}
 
 export async function chatWithSession(
   sessionId: string,
   inputMessages: ModelMessage[],
-  _opt?: ChatWithSessionOptions,
+  opt?: ChatWithSessionOptions,
 ) {
   const session = await gv.db.session.findUnique({
     where: { id: sessionId },
@@ -35,13 +37,18 @@ export async function chatWithSession(
   }
 
   const streamResult = await agent.runChatLoop(messages, sessionId, {
-    onFinish: async (output) => {
-      await Promise.all([
-        saveModelMessages(sessionId, output.response.messages),
-        saveSessionUsage(sessionId, output.usage),
-      ]);
-    },
+    abortSignal: opt?.abortSignal,
   });
 
+  saveChatStreamOutput(sessionId, streamResult);
   return streamResult;
+}
+
+async function saveChatStreamOutput(sessionId: string, streamResult: StreamTextResult<any, any>) {
+  const [response, usage] = await Promise.all([streamResult.response, streamResult.totalUsage]);
+
+  await Promise.all([
+    saveModelMessages(sessionId, response.messages),
+    saveSessionUsage(sessionId, usage),
+  ]);
 }

@@ -20,8 +20,7 @@ export function setupSessionsRoutes(app: Hono) {
    */
   app.post("/", async (c) => {
     const body = await c.req.json<{ profile?: string }>();
-    const profile =
-      body.profile || Object.keys(gv.config.agents || {}).at(0) || "";
+    const profile = body.profile || Object.keys(gv.config.agents || {}).at(0) || "";
 
     if (!gv.config.agents?.[profile]) {
       return c.json({ error: "Invalid agent profile" }, 400);

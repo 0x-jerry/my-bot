@@ -62,7 +62,7 @@ function resolveMcpConfig(config: ToolSet.Mcp) {
   return mcpConfig;
 }
 
-function filterToolset(toolset: Record<string, Tool>, includes?: string[]) {
+function filterToolset(toolset: Record<string, unknown>, includes?: string[]) {
   if (!includes?.length) {
     return toolset;
   }

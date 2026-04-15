@@ -39,8 +39,10 @@
       "version": "1.0.0",
       "dependencies": {
         "@0x-jerry/utils": "^6.3.0",
+        "@agentclientprotocol/sdk": "^0.19.0",
         "@ai-sdk/mcp": "^1.0.25",
         "@ai-sdk/openai-compatible": "^2.0.35",
+        "@cfworker/json-schema": "^4.1.1",
         "@hono/node-server": "^1.19.11",
         "@modelcontextprotocol/client": "^2.0.0-alpha.2",
         "@prisma/client": "^7.4.2",
@@ -97,6 +99,8 @@
 
     "@0x-jerry/x-release": ["@0x-jerry/x-release@3.0.1", "https://registry.npmmirror.com/@0x-jerry/x-release/-/x-release-3.0.1.tgz", { "dependencies": { "@0x-jerry/load-pkg": "^0.1.5", "@0x-jerry/utils": "^5.0.0", "cac": "^6.7.14", "debug": "^4.4.3", "picocolors": "^1.1.1", "prompts": "^2.4.2", "semver": "^7.7.3", "unconfig": "^7.4.1" }, "bin": { "x-release": "dist/cli.js" } }, "sha512-vuhFdVuhZqSPcBxi4i9YuQT7IJPk0Ic8IH4HTcJWIOQshDE635pLBnwccidFsjw5K/J8XCEm2my0ovvn1thuag=="],
 
+    "@agentclientprotocol/sdk": ["@agentclientprotocol/sdk@0.19.0", "", { "peerDependencies": { "zod": "^3.25.0 || ^4.0.0" } }, "sha512-U9I8ws9WTOk6jCBAWpXefGSDgVXn14/kV6HFzwWGcstQ02mOQgClMAROHmoIn9GqZbDBDEOkdIbP4P4TEMQdug=="],
+
     "@ai-sdk/gateway": ["@ai-sdk/gateway@3.0.80", "https://registry.npmmirror.com/@ai-sdk/gateway/-/gateway-3.0.80.tgz", { "dependencies": { "@ai-sdk/provider": "3.0.8", "@ai-sdk/provider-utils": "4.0.21", "@vercel/oidc": "3.1.0" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-uM7kpZB5l977lW7+2X1+klBUxIZQ78+1a9jHlaHFEzcOcmmslTl3sdP0QqfuuBcO0YBM2gwOiqVdp8i4TRQYcw=="],
 
     "@ai-sdk/mcp": ["@ai-sdk/mcp@1.0.25", "https://registry.npmmirror.com/@ai-sdk/mcp/-/mcp-1.0.25.tgz", { "dependencies": { "@ai-sdk/provider": "3.0.8", "@ai-sdk/provider-utils": "4.0.19", "pkce-challenge": "5.0.1" }, "peerDependencies": { "zod": "4.3.6" } }, "sha512-vMlXUPGHGDE2vzLcPR8sw7Dhz2OBjtPU5lB+lIuC1hNQo4REuUC08P0e96/hzBKf4oQYJ8Zo6uP8AG2qThyFbg=="],
@@ -106,6 +110,8 @@
     "@ai-sdk/provider": ["@ai-sdk/provider@3.0.8", "https://registry.npmmirror.com/@ai-sdk/provider/-/provider-3.0.8.tgz", { "dependencies": { "json-schema": "0.4.0" } }, "sha512-oGMAgGoQdBXbZqNG0Ze56CHjDZ1IDYOwGYxYjO5KLSlz5HiNQ9udIXsPZ61VWaHGZ5XW/jyjmr6t2xz2jGVwbQ=="],
 
     "@ai-sdk/provider-utils": ["@ai-sdk/provider-utils@4.0.21", "https://registry.npmmirror.com/@ai-sdk/provider-utils/-/provider-utils-4.0.21.tgz", { "dependencies": { "@ai-sdk/provider": "3.0.8", "@standard-schema/spec": "^1.1.0", "eventsource-parser": "^3.0.6" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-MtFUYI1/8mgDvRmaBDjbLJPFFrMG777AvSgyIFQtZHIMzm88R/12vYBBpnk7pfiWLFE1DSZzY4WDYzGbKAcmiw=="],
+
+    "@cfworker/json-schema": ["@cfworker/json-schema@4.1.1", "", {}, "sha512-gAmrUZSGtKc3AiBL71iNWxDsyUC5uMaKKGdvzYsBoTW/xi42JQHl7eKV2OYzCUqvc+D2RCcf7EXY2iCyFIk6og=="],
 
     "@chevrotain/cst-dts-gen": ["@chevrotain/cst-dts-gen@10.5.0", "https://registry.npmmirror.com/@chevrotain/cst-dts-gen/-/cst-dts-gen-10.5.0.tgz", { "dependencies": { "@chevrotain/gast": "10.5.0", "@chevrotain/types": "10.5.0", "lodash": "4.17.21" } }, "sha512-lhmC/FyqQ2o7pGK4Om+hzuDrm9rhFYIJ/AXoQBeongmn870Xeb0L6oGEiuR8nohFNL5sMaQEJWCxr1oIVIVXrw=="],
 
