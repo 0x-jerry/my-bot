@@ -2,16 +2,12 @@ import { Hono } from "hono";
 import { McpServer } from "@modelcontextprotocol/server";
 import { StreamableHTTPTransport } from "@hono/mcp";
 import type { ToolDefinition } from "./utils";
-import { memoryTools } from "./memory";
 
 export function setupMCP(app: Hono) {
-  // Your MCP server implementation
   const mcpServer = new McpServer({
     name: "my-bot-mcp-server",
     version: "1.0.0",
   });
-
-  reigsterTools(mcpServer, memoryTools);
 
   const transport = new StreamableHTTPTransport();
 
@@ -24,7 +20,7 @@ export function setupMCP(app: Hono) {
   });
 }
 
-function reigsterTools(mcpServer: McpServer, tools: ToolDefinition[]) {
+function registerTools(mcpServer: McpServer, tools: ToolDefinition[]) {
   for (const tool of tools) {
     mcpServer.registerTool(
       tool.name,
